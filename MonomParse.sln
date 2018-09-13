@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2019
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonomParse", "MonomParse\MonomParse.csproj", "{9C29E588-A915-4ADC-8305-8AA0A1958ECF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9C29E588-A915-4ADC-8305-8AA0A1958ECF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C29E588-A915-4ADC-8305-8AA0A1958ECF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C29E588-A915-4ADC-8305-8AA0A1958ECF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C29E588-A915-4ADC-8305-8AA0A1958ECF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B0177D16-1026-408D-A4C2-1C62E9BF3F84}
+	EndGlobalSection
+EndGlobal

@@ -29,11 +29,12 @@ namespace MonomParse
             int exponent = 1;
             string stringExponent = "";
             Match exponentMatch = Regex.Match(expression ?? ""
-                , @"(?<coeficient>\d+)?(?<variable>[A-Za-z]+)?\^?(?<exponent>\d+)?");
+                , @"(?<coeficient>[-]?\d+)?(?<variable>[A-Za-z]+)?\^?(?<exponent>\d+)?");
             if (exponentMatch.Success)
                 stringExponent = exponentMatch.Groups["exponent"].Value;
-            int.TryParse(stringExponent, out exponent);
-            return exponent;
+            if (int.TryParse(stringExponent, out exponent))
+                return exponent;
+            return 1;
         }
 
         private int ParseCoefficient(string expression)
@@ -43,8 +44,9 @@ namespace MonomParse
             Match coefficientMatch = Regex.Match(expression ?? "", @"[-+]?\d+");
             if (coefficientMatch.Success)
                 stringCoefficient = coefficientMatch.Value;
-            int.TryParse(stringCoefficient, out coefficient);
-            return coefficient;
+            if (int.TryParse(stringCoefficient, out coefficient))
+                return coefficient;
+            return 1;
         }
 
         private string ParseVariable(string expression)

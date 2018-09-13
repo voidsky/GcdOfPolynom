@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace MonomParse
+namespace MonomialParse
 {
-    internal class Monome
+    internal class Monomial
     {
         private string expression;
         private string variable;
@@ -11,13 +11,13 @@ namespace MonomParse
         private int? exponent;
         private IExpressionParser parser;
 
-        public Monome(string expression, IExpressionParser parser)
+        public Monomial(string expression, IExpressionParser parser)
         {
             this.parser = parser;
             this.ParseExpression(expression);
         }
 
-        public Monome(int? coefficient, string variable, int? exponent, IExpressionParser parser)
+        public Monomial(int? coefficient, string variable, int? exponent, IExpressionParser parser)
         {
             this.parser = parser;
             this.coefficient = coefficient;
@@ -38,6 +38,5 @@ namespace MonomParse
         public int? Coefficient => this.coefficient;
         public int? Exponent => this.exponent;
         public string Expression => this.expression;
-
     }
 }

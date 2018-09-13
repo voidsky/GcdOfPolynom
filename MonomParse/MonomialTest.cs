@@ -2,10 +2,10 @@
 using System.Reflection;
 using NUnit.Framework;
 
-namespace MonomParse
+namespace MonomialParse
 {
     [TestFixture]
-    public class MonomeTest
+    public class MonomialTest
     {
         [TestCase(null, "")]
         [TestCase("", "")]
@@ -15,11 +15,11 @@ namespace MonomParse
         [TestCase(" -2XX^5 ", "XX")]
         [TestCase(" -2X X^-5 Y Y ", "X")]
         [TestCase("-5x^2", "x")]
-        public void ParseMonomVariableResultsIn(string expression, string expectedResult)
+        public void ParseMonomialVariableResultsIn(string expression, string expectedResult)
         {
             IExpressionParser parser = new ExpressionParser();
-            Monome monom = new Monome(expression, parser);
-            string result = monom.Variable;
+            Monomial monomial = new Monomial(expression, parser);
+            string result = monomial.Variable;
             Assert.AreEqual(expectedResult, result);
         }
 
@@ -28,11 +28,11 @@ namespace MonomParse
         [TestCase(" -55 ", -55)]
         [TestCase("+1", 1)]
         [TestCase("-5x^2", -5)]
-        public void ParseMonomCoefficientResultsIn(string expression, int expectedResult)
+        public void ParseMonomialCoefficientResultsIn(string expression, int expectedResult)
         {
             IExpressionParser parser = new ExpressionParser();
-            Monome monom = new Monome(expression, parser);
-            int? result = monom.Coefficient;
+            Monomial monomial = new Monomial(expression, parser);
+            int? result = monomial.Coefficient;
             Assert.AreEqual(expectedResult, result);
         }
 
@@ -41,11 +41,11 @@ namespace MonomParse
         [TestCase("x", 1)]
         [TestCase("", 1)]
         [TestCase("-5x^-2", -2)]
-        public void ParseMonomExponentResultsIn(string expression, int expectedResult)
+        public void ParseMonomialExponentResultsIn(string expression, int expectedResult)
         {
             IExpressionParser parser = new ExpressionParser();
-            Monome monom = new Monome(expression, parser);
-            int? result = monom.Exponent;
+            Monomial monomial = new Monomial(expression, parser);
+            int? result = monomial.Exponent;
             Assert.AreEqual(expectedResult, result);
         }
 
@@ -56,12 +56,11 @@ namespace MonomParse
         [TestCase(-5, "", null, "-5")]
         [TestCase(null, "", -5, "")]
         [TestCase(null, "x", null, "x")]
-        public void CreateMonomeResultsIn(int? coefficient, string variable, int? exponent, string expression)
+        public void CreateMonomialResultsIn(int? coefficient, string variable, int? exponent, string expression)
         {
             IExpressionParser parser = new ExpressionParser();
-            Monome monom = new Monome(coefficient, variable, exponent, parser);
-            Assert.AreEqual(monom.Expression, expression);
-
+            Monomial monomial = new Monomial(coefficient, variable, exponent, parser);
+            Assert.AreEqual(monomial.Expression, expression);
         }
 
     }

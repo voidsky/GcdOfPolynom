@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace MonomParse
+namespace MonomialParse
 {
     public class ExpressionParser : IExpressionParser
     {

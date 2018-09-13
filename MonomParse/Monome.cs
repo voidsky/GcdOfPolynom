@@ -9,7 +9,7 @@ namespace MonomParse
         private string variable;
         private int? coefficient;
         private int? exponent;
-        public IExpressionParser parser;
+        private IExpressionParser parser;
 
         public Monome(string expression, IExpressionParser parser)
         {
@@ -23,15 +23,15 @@ namespace MonomParse
             this.coefficient = coefficient;
             this.variable = variable?.Trim();
             this.exponent = exponent;
-            this.expression = parser.MakeStringExpression(this.coefficient, this.variable, this.exponent);
+            this.expression = parser.CombineStringExpression(this.coefficient, this.variable, this.exponent);
         }
 
         private void ParseExpression(string fromExpression)
         {
             this.expression = fromExpression;
-            this.variable = parser.ParseVariable(fromExpression);
-            this.coefficient = parser.ParseCoefficient(fromExpression);
-            this.exponent = parser.ParseExponent(fromExpression);
+            this.variable = parser.ExtractVariable(fromExpression);
+            this.coefficient = parser.ExtractCoefficient(fromExpression);
+            this.exponent = parser.ExtractExponent(fromExpression);
         }
 
         public string Variable => this.variable;

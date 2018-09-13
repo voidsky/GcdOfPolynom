@@ -14,50 +14,46 @@ namespace MonomParse
            +@"(?<variable>\s*[A-Za-z]+\s*)?\s*"
            +@"\^?\s*(?<exponent>[-]?\d+)?";
 
-        public int ParseExponent(string expression)
+        public int ExtractExponent(string expression)
         {
-            int exponent = 1;
-            string stringExponent = "";
-            Match exponentMatch = Regex.Match(expression ?? "", expressionRegex);
-            if (exponentMatch.Success)
-                stringExponent = exponentMatch.Groups["exponent"].Value;
-            if (int.TryParse(stringExponent, out exponent))
+            var stringExponent = ExtractExpressionPart(expression, "exponent");
+            if (int.TryParse(stringExponent, out var exponent))
                 return exponent;
             return 1;
         }
 
-        public int ParseCoefficient(string expression)
+        public int ExtractCoefficient(string expression)
         {
-            int coefficient = 1;
-            string stringCoefficient = "";
-            Match coefficientMatch = Regex.Match(expression ?? "", expressionRegex);
-            if (coefficientMatch.Success)
-                stringCoefficient = coefficientMatch.Groups["coeficient"].Value;
-            if (int.TryParse(stringCoefficient, out coefficient))
+            var stringCoefficient = ExtractExpressionPart(expression, "coeficient");
+            if (int.TryParse(stringCoefficient, out var coefficient))
                 return coefficient;
             return 1;
         }
 
-        public string ParseVariable(string expression)
+        public string ExtractVariable(string expression)
         {
-            string result = "";
-            Match variableMatch = Regex.Match(expression ?? "", expressionRegex);
-            if (variableMatch.Success)
-                result = variableMatch.Groups["variable"].Value;
-            result = result.Trim();
-            return result;
+            return ExtractExpressionPart(expression, "variable");
         }
 
-        public string MakeStringExpression(int? coefficient, string variable, int? exponent)
+        public string CombineStringExpression(int? coefficient, string variable, int? exponent)
         {
             string expression = "";
             if (coefficient != null) expression += coefficient.ToString();
-            if (variable != null && variable != "")
+            if (!String.IsNullOrEmpty(variable))
             {
                 expression += variable;
                 if (exponent != null) expression += "^" + exponent.ToString();
             }
             return expression;
+        }
+
+        private string ExtractExpressionPart(string expression, string regexGroup)
+        {
+            string result = "";
+            Match exponentMatch = Regex.Match(expression ?? "", expressionRegex);
+            if (exponentMatch.Success)
+                result = exponentMatch.Groups[regexGroup].Value.Trim();
+            return result;
         }
     }
 }

@@ -8,9 +8,9 @@ namespace MonomParse
 {
     interface IExpressionParser
     {
-        int ParseExponent(string expression);
-        int ParseCoefficient(string expression);
-        string ParseVariable(string expression);
-        string MakeStringExpression(int? coefficient, string variable, int? exponent);
+        int ExtractExponent(string expression);
+        int ExtractCoefficient(string expression);
+        string ExtractVariable(string expression);
+        string CombineStringExpression(int? coefficient, string variable, int? exponent);
     }
 }

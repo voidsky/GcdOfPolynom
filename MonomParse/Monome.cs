@@ -7,76 +7,37 @@ namespace MonomParse
     {
         private string expression;
         private string variable;
-        private int coefficient;
-        private int exponent;
+        private int? coefficient;
+        private int? exponent;
+        public IExpressionParser parser;
 
-        public Monome(string expression)
+        public Monome(string expression, IExpressionParser parser)
         {
-            this.expression = expression;
-            this.ParseExpression(this.expression);
+            this.parser = parser;
+            this.ParseExpression(expression);
         }
 
-        private void ParseExpression(string expression)
+        public Monome(int? coefficient, string variable, int? exponent, IExpressionParser parser)
         {
-            this.variable = ParseVariable(expression);
-            this.coefficient = ParseCoefficient(expression);
-            this.exponent = ParseExponent(expression);
-
+            this.parser = parser;
+            this.coefficient = coefficient;
+            this.variable = variable?.Trim();
+            this.exponent = exponent;
+            this.expression = parser.MakeStringExpression(this.coefficient, this.variable, this.exponent);
         }
 
-        private int ParseExponent(string expression)
+        private void ParseExpression(string fromExpression)
         {
-            int exponent = 1;
-            string stringExponent = "";
-            Match exponentMatch = Regex.Match(expression ?? ""
-                , @"(?<coeficient>[-]?\d+)?(?<variable>[A-Za-z]+)?\^?(?<exponent>\d+)?");
-            if (exponentMatch.Success)
-                stringExponent = exponentMatch.Groups["exponent"].Value;
-            if (int.TryParse(stringExponent, out exponent))
-                return exponent;
-            return 1;
+            this.expression = fromExpression;
+            this.variable = parser.ParseVariable(fromExpression);
+            this.coefficient = parser.ParseCoefficient(fromExpression);
+            this.exponent = parser.ParseExponent(fromExpression);
         }
 
-        private int ParseCoefficient(string expression)
-        {
-            int coefficient = 1;
-            string stringCoefficient = "";
-            Match coefficientMatch = Regex.Match(expression ?? "", @"[-+]?\d+");
-            if (coefficientMatch.Success)
-                stringCoefficient = coefficientMatch.Value;
-            if (int.TryParse(stringCoefficient, out coefficient))
-                return coefficient;
-            return 1;
-        }
+        public string Variable => this.variable;
+        public int? Coefficient => this.coefficient;
+        public int? Exponent => this.exponent;
+        public string Expression => this.expression;
 
-        private string ParseVariable(string expression)
-        {
-            string result = "";
-            Match variableMatch = Regex.Match(expression ?? "", @"[A-Za-z]+");
-            if (variableMatch.Success)
-                result = variableMatch.Value;
-            return result;
-        }
-
-
-        public string Variable {
-            get {
-                return this.variable;
-            }
-        }
-
-        public int Coefficient {
-            get {
-                return this.coefficient;
-            }
-        }
-
-        public int Exponent
-        {
-            get
-            {
-                return this.exponent;
-            }
-        }
     }
 }

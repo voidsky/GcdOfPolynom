@@ -11,6 +11,6 @@ namespace MonomialParse
         int ExtractExponent(string expression);
         int ExtractCoefficient(string expression);
         string ExtractVariable(string expression);
-        string CombineStringExpression(int? coefficient, string variable, int? exponent);
+        string CombineStringExpression(double? coefficient, string variable, int? exponent);
     }
 }

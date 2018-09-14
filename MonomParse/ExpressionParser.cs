@@ -35,7 +35,7 @@ namespace MonomialParse
             return ExtractExpressionPart(expression, "variable");
         }
 
-        public string CombineStringExpression(int? coefficient, string variable, int? exponent)
+        public string CombineStringExpression(double? coefficient, string variable, int? exponent)
         {
             string expression = "";
             if (coefficient != null) expression += coefficient.ToString();

@@ -32,8 +32,7 @@ namespace MonomialParse
         {
             IExpressionParser parser = new ExpressionParser();
             Monomial monomial = new Monomial(expression, parser);
-            int? result = monomial.Coefficient;
-            Assert.AreEqual(expectedResult, result);
+            Assert.AreEqual(expectedResult, monomial.Coefficient);
         }
 
         [TestCase("-5x^2", 2)]
@@ -62,56 +61,5 @@ namespace MonomialParse
             Monomial monomial = new Monomial(coefficient, variable, exponent, parser);
             Assert.AreEqual(monomial.Expression, expression);
         }
-
-        [Test]
-        public void MonomialsAddResultsIn3x2()
-        {
-            IExpressionParser parser = new ExpressionParser();
-            Monomial monomial = new Monomial(1,"x",2, parser);
-            Monomial monomialToAdd = new Monomial(2,"x",2, parser);
-            Monomial result = monomial.AddMonomialsWithSameVariable(monomialToAdd);
-            Assert.AreEqual("3x^2", result.Expression);
-        }
-
-        [Test]
-        public void MonomialsAddResultsIn3x()
-        {
-            IExpressionParser parser = new ExpressionParser();
-            Monomial monomial = new Monomial(1, "x", null, parser);
-            Monomial monomialToAdd = new Monomial(2, "x", null, parser);
-            Monomial result = monomial.AddMonomialsWithSameVariable(monomialToAdd);
-            Assert.AreEqual("3x", result.Expression);
-        }
-
-        [Test]
-        public void MonomialsAddResultsIn3()
-        {
-            IExpressionParser parser = new ExpressionParser();
-            Monomial monomial = new Monomial(1, "", null, parser);
-            Monomial monomialToAdd = new Monomial(2, "", null, parser);
-            Monomial result = monomial.AddMonomialsWithSameVariable(monomialToAdd);
-            Assert.AreEqual("3", result.Expression);
-        }
-
-        [Test]
-        public void MonomialsAddResultsInException()
-        {
-            IExpressionParser parser = new ExpressionParser();
-            Monomial monomial = new Monomial(1, "x", 2, parser);
-            Monomial monomialToAdd = new Monomial(2, "y", 2, parser);
-            Assert.Throws<MonomialsCannotBeAddedException>(()=>
-                monomial.AddMonomialsWithSameVariable(monomialToAdd));
-        }
-
-        [Test]
-        public void MonomialsAddResultsInException2()
-        {
-            IExpressionParser parser = new ExpressionParser();
-            Monomial monomial = new Monomial(1, "x", 2, parser);
-            Monomial monomialToAdd = new Monomial(2, "x", 3, parser);
-            Assert.Throws<MonomialsCannotBeAddedException>(() =>
-                monomial.AddMonomialsWithSameVariable(monomialToAdd));
-        }
-
     }
 }

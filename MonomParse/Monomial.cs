@@ -7,7 +7,7 @@ namespace MonomialParse
     {
         private string expression;
         private string variable;
-        private int? coefficient;
+        private double? coefficient;
         private int? exponent;
         private IExpressionParser parser;
 
@@ -17,7 +17,7 @@ namespace MonomialParse
             this.ParseExpression(expression);
         }
 
-        public Monomial(int? coefficient, string variable, int? exponent, IExpressionParser parser)
+        public Monomial(double? coefficient, string variable, int? exponent, IExpressionParser parser)
         {
             this.parser = parser;
             this.coefficient = coefficient;
@@ -34,29 +34,61 @@ namespace MonomialParse
             this.exponent = parser.ExtractExponent(fromExpression);
         }
 
-        public Monomial AddMonomialsWithSameVariable(Monomial monomialToadd)
+        public Monomial AddMonomialWithSameVariable(Monomial monomialToAdd)
         {
-            Monomial additionResult;
-            if (IsVariableAndExponentSame(monomialToadd))
-            {
-                var newCoefficient = this.coefficient + monomialToadd.coefficient;
-                additionResult = new Monomial(newCoefficient, this.variable, this.exponent, parser);
-                return additionResult;
-            }
-            else
-            {
-                throw new MonomialsCannotBeAddedException();
-            }
+            if (!IsVariableAndExponentSame(monomialToAdd)) throw new InvalidOperationWithMonomialsException();
+            var newCoefficient = this.coefficient + monomialToAdd.coefficient;
+            return new Monomial(newCoefficient, this.variable, this.exponent, parser);
         }
 
-        private bool IsVariableAndExponentSame(Monomial monomialToadd)
+        public Monomial SubtractMonomialWithSameVariable(Monomial monomialToSubtract)
         {
-            return this.variable == monomialToadd.variable &&
-                            this.exponent == monomialToadd.exponent;
+            if (!IsVariableAndExponentSame(monomialToSubtract)) throw new InvalidOperationWithMonomialsException();
+            var newCoefficient = this.coefficient - monomialToSubtract.coefficient;
+            return new Monomial(newCoefficient, this.variable, this.exponent, parser);
+        }
+
+        public Monomial DivideMonomialWithSameVariable(Monomial divisorMonomial)
+        {
+            if (!IsVariableSame(divisorMonomial)) throw new InvalidOperationWithMonomialsException();
+            if (divisorMonomial.coefficient == 0) throw new DivideByZeroException();
+
+            var newCoefficient = this.coefficient / divisorMonomial.coefficient;
+            int? newExponent = null;
+            var newVariable = "";
+            if (AreExponentsDifferent(divisorMonomial))
+            {
+                newExponent = this.exponent - divisorMonomial.exponent;
+                newVariable = this.variable;
+            }
+
+            if (newCoefficient == 0)
+            {
+                newVariable = "";
+            }
+
+            return new Monomial(newCoefficient, newVariable, newExponent, parser);
+        }
+
+
+        private bool IsVariableAndExponentSame(Monomial monomial)
+        {
+            return this.variable == monomial.variable &&
+                            this.exponent == monomial.exponent;
+        }
+
+        private bool IsVariableSame(Monomial monomial)
+        {
+            return this.variable == monomial.variable;
+        }
+
+        private bool AreExponentsDifferent(Monomial monomial)
+        {
+            return this.exponent != monomial.exponent;
         }
 
         public string Variable => this.variable;
-        public int? Coefficient => this.coefficient;
+        public double? Coefficient => this.coefficient;
         public int? Exponent => this.exponent;
         public string Expression => this.expression;
     }

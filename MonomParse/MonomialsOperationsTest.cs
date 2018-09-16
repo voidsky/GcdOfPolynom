@@ -117,13 +117,21 @@ namespace MonomParse
 
         #region Test monomials division
         [Test]
-        public void MonomialsDivisionTest1()
+        [TestCase(1,"x",2,  2,"x",2, 0,5d)]
+        [TestCase(null,"x",5,  null,"x",3, "x^2")]
+        [TestCase(null, "x", null, null, "x", null, "1")]
+        [TestCase(5, null, null, 2, null, null, "2.5")]
+        [TestCase(5, "x", 1, 2, "x", 2, "2.5x^-1")]
+        [TestCase(5, "x", 2, 2, "x", 2, "2.5")]
+        public void MonomialsDivisionTest1(decimal? coefficient, string variable, int? exponent,
+            int? coefficient2, string variable2, int? exponent2,
+            string expressionResult)
         {
             IExpressionParser parser = new ExpressionParser();
-            Monomial monomial = new Monomial(1, "x", 2, parser);
-            Monomial divisor = new Monomial(2, "x", 2, parser);
+            Monomial monomial = new Monomial(coefficient, variable, exponent, parser);
+            Monomial divisor = new Monomial(coefficient2, variable2, exponent2, parser);
             Monomial result = monomial.DivideMonomialWithSameVariable(divisor);
-            Assert.AreEqual("0.5", result.Expression);
+            Assert.AreEqual(expressionResult, result.Expression);
         }
 
         [Test]

@@ -22,7 +22,7 @@ namespace MonomialParse
             return 1;
         }
 
-        public int ExtractCoefficient(string expression)
+        public decimal ExtractCoefficient(string expression)
         {
             var stringCoefficient = ExtractExpressionPart(expression, "coeficient");
             if (int.TryParse(stringCoefficient, out var coefficient))
@@ -35,15 +35,22 @@ namespace MonomialParse
             return ExtractExpressionPart(expression, "variable");
         }
 
-        public string CombineStringExpression(double? coefficient, string variable, int? exponent)
+        public string CombineStringExpression(decimal? coefficient, string variable, int? exponent)
         {
-            string expression = "";
-            if (coefficient != null) expression += coefficient.ToString();
-            if (!String.IsNullOrEmpty(variable))
+            string stringVariable = variable ?? "";
+            string stringCoefficient = (coefficient ?? 1) == 1 ? "" : coefficient.ToString();
+            string stringExponent = "";
+            if (stringVariable.Length > 0)
             {
-                expression += variable;
-                if (exponent != null) expression += "^" + exponent.ToString();
+                stringExponent = (exponent ?? 1) == 1 ? "" : "^" + exponent.ToString();
             }
+            else
+            {
+                stringCoefficient = (coefficient ?? 1).ToString();
+            }
+
+
+            string expression = $"{stringCoefficient}{stringVariable}{stringExponent}";
             return expression;
         }
 

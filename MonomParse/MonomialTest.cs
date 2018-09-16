@@ -50,16 +50,16 @@ namespace MonomialParse
 
         [TestCase(5,"x",2,"5x^2")]
         [TestCase(-5, " yy ", -2, "-5yy^-2")]
-        [TestCase(1, "x",1, "1x^1")]
-        [TestCase(null, "", null, "")]
+        [TestCase(1, "x",1, "x")]
+        [TestCase(null, "", null, "1")]
         [TestCase(-5, "", null, "-5")]
-        [TestCase(null, "", -5, "")]
+        [TestCase(null, "", -5, "1")]
         [TestCase(null, "x", null, "x")]
-        public void CreateMonomialResultsIn(int? coefficient, string variable, int? exponent, string expression)
+        public void CreateMonomialResultsIn(decimal? coefficient, string variable, int? exponent, string expression)
         {
             IExpressionParser parser = new ExpressionParser();
             Monomial monomial = new Monomial(coefficient, variable, exponent, parser);
-            Assert.AreEqual(monomial.Expression, expression);
+            Assert.AreEqual(expression, monomial.Expression);
         }
     }
 }

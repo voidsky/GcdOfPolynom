@@ -7,8 +7,8 @@ namespace MonomialParse
     {
         private string expression;
         private string variable;
-        private double? coefficient;
-        private int? exponent;
+        private decimal coefficient;
+        private int exponent;
         private IExpressionParser parser;
 
         public Monomial(string expression, IExpressionParser parser)
@@ -17,12 +17,12 @@ namespace MonomialParse
             this.ParseExpression(expression);
         }
 
-        public Monomial(double? coefficient, string variable, int? exponent, IExpressionParser parser)
+        public Monomial(decimal? coefficient, string variable, int? exponent, IExpressionParser parser)
         {
             this.parser = parser;
-            this.coefficient = coefficient;
+            this.coefficient = coefficient??1;
             this.variable = variable?.Trim();
-            this.exponent = exponent;
+            this.exponent = exponent??1;
             this.expression = parser.CombineStringExpression(this.coefficient, this.variable, this.exponent);
         }
 
@@ -54,12 +54,17 @@ namespace MonomialParse
             if (divisorMonomial.coefficient == 0) throw new DivideByZeroException();
 
             var newCoefficient = this.coefficient / divisorMonomial.coefficient;
-            int? newExponent = null;
-            var newVariable = "";
+            int? newExponent = 1;
+            string newVariable;
+
             if (AreExponentsDifferent(divisorMonomial))
             {
                 newExponent = this.exponent - divisorMonomial.exponent;
                 newVariable = this.variable;
+            }
+            else
+            {
+                newVariable = "";
             }
 
             if (newCoefficient == 0)
@@ -88,7 +93,7 @@ namespace MonomialParse
         }
 
         public string Variable => this.variable;
-        public double? Coefficient => this.coefficient;
+        public decimal? Coefficient => this.coefficient;
         public int? Exponent => this.exponent;
         public string Expression => this.expression;
     }

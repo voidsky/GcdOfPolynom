@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace MonomialParse
 {
-    interface IExpressionParser
+    public interface IExpressionParser
     {
         int ExtractExponent(string expression);
-        int ExtractCoefficient(string expression);
+        decimal ExtractCoefficient(string expression);
         string ExtractVariable(string expression);
-        string CombineStringExpression(double? coefficient, string variable, int? exponent);
+        string CombineStringExpression(decimal? coefficient, string variable, int? exponent);
+
     }
 }

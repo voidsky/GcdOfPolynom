@@ -25,5 +25,7 @@ namespace MonomParse
         {
             return this.monomials.Count();
         }
+
+        public List<Monomial> Monomials => monomials;
     }
 }

@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace MonomialParse
 {
-    internal class Monomial
+    internal class Monomial : IComparable<Monomial>
     {
         private string expression;
         private string variable;
@@ -96,5 +96,12 @@ namespace MonomialParse
         public decimal? Coefficient => this.coefficient;
         public int? Exponent => this.exponent;
         public string Expression => this.expression;
+
+        public int CompareTo(Monomial that)
+        {
+            if (this.exponent > that.exponent) return -1;
+            if (this.exponent == that.exponent) return 0;
+            return -1;
+        }
     }
 }

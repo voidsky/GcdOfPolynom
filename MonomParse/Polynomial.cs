@@ -25,5 +25,10 @@ namespace MonomParse
         {
             return this.monomials.Count();
         }
+
+        public void ArrangeDescending()
+        {
+            //monomials.Sort((x,y)=>x.Exponent.co);
+        }
     }
 }

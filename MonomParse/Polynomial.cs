@@ -1,36 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using MonomialParse;
 
 namespace MonomParse
 {
     public class Polynomial
     {
-        private List<Monomial> monomials;
+        public List<Monomial> Monomials { get; }
 
         public Polynomial(string expression, IExpressionParser parser)
         {
-            monomials = new List<Monomial>();
+            Monomials = new List<Monomial>();
             var monomialStrings = new MonomialStrings(expression);
             foreach (var monomialString in monomialStrings)
-            {
-                this.monomials.Add(new Monomial(monomialString,parser));
-            }
+                Monomials.Add(new Monomial(monomialString, parser));
         }
 
         public int MonomialCount()
         {
-            return this.monomials.Count();
+            return Monomials.Count();
         }
-        
-        public List<Monomial> Monomials => monomials;
 
-        public void ArrangeDescending()
+        public void SortDescending()
         {
-            //monomials.Sort((x,y)=>x.Exponent.co);
+            Monomials.Sort((x, y) => x.CompareTo(y));
+        }
+
+        public string PolynomialString()
+        {
+            StringBuilder str = new StringBuilder();
+            foreach (var monomial in Monomials)
+            {
+                if (str.Length>0 && monomial.Coefficient >= 0) str.Append("+");
+                str.Append(monomial.Expression);
+            }
+            return str.ToString();
         }
     }
 }

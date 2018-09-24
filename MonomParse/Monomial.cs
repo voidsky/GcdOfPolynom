@@ -105,8 +105,13 @@ namespace MonomialParse
        public int CompareTo(Monomial that)
         {
             if (this.exponent > that.exponent) return -1;
-            if (this.exponent == that.exponent) return 0;
-            return -1;
+            if (this.exponent == that.exponent)
+            {
+                if (this.coefficient > that.coefficient) return -1;
+                if (this.coefficient < that.coefficient) return 1;
+                return 0;
+            }
+            return 1;
         }
 
     }

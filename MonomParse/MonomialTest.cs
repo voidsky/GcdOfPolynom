@@ -62,14 +62,18 @@ namespace MonomialParse
             Assert.AreEqual(expression, monomial.Expression);
         }
 
-        [TestCase("x^2","5X^2",0)]
+        [TestCase("x^2","X^2",0)]
+        [TestCase("x^3", "X^2", -1)]
+        [TestCase("x^2", "X^3", 1)]
+        [TestCase("5x^3", "X^3", -1)]
+        [TestCase("x^3", "5X^3", 1)]
+        [TestCase("1x^3", "X^3", 0)]
         public void CompareMonomialResultsIn(string firstExpression, string secondExpression, int result)
         {
             IExpressionParser parser = new ExpressionParser();
             Monomial firstMonomial = new Monomial(firstExpression, parser);
             Monomial secondMonomial = new Monomial(secondExpression, parser);
             Assert.AreEqual(result, firstMonomial.CompareTo(secondMonomial));
-
         }
     }
 }

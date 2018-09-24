@@ -24,24 +24,39 @@ namespace MonomParse
             Assert.AreEqual(count, poly.MonomialCount());
         }
 
-        [TestCase("2^x2+x+1","2x^2","x","1")]
+        [TestCase("2x^2+x+1","2x^2","x","1")]
         [TestCase("-x^3-x-1","-x^3","-x","-1")]
-
+        [TestCase("5-2x^2+3x^3", "5", "-2x^2", "3x^3")]
         public void CreatePolynomialResultsInMonomials(string polyExpression,
             string firstMonomExpression,
             string secondMonomExpression,
             string thirdMonomExpression)
         {
             ExpressionParser parser = new ExpressionParser();
+
             Polynomial poly = new Polynomial(polyExpression, parser);
+
             Monomial first = new Monomial(firstMonomExpression, parser);
             Monomial second = new Monomial(secondMonomExpression, parser);
             Monomial third = new Monomial(thirdMonomExpression, parser);
 
-            Monomial[] monomArray = poly.Monomials.ToArray();
-            Assert.AreEqual(first.Expression,firstMonomExpression);
-            Assert.AreEqual(second.Expression,secondMonomExpression);
-            Assert.AreEqual(third.Expression,thirdMonomExpression);
+            var monomArray = poly.Monomials.ToArray();
+            Assert.AreEqual(first.Expression, monomArray[0].Expression );
+            Assert.AreEqual(second.Expression, monomArray[1].Expression );
+            Assert.AreEqual(third.Expression, monomArray[2].Expression);
+        }
+
+        [TestCase("1","1")]
+        [TestCase("x^2", "x^2")]
+        [TestCase("x+x^2", "x^2+x")]
+        [TestCase("5-2x^2+3x^3", "3x^3-2x^2+5")]
+        public void TestSortPolynomial(string polyExpression, string polyExpressionSorted)
+        {
+            ExpressionParser parser = new ExpressionParser();
+            Polynomial poly = new Polynomial(polyExpression, parser);
+            poly.SortDescending();
+            Assert.AreEqual(polyExpressionSorted, poly.PolynomialString());
+
 
         }
     }

@@ -117,7 +117,7 @@ namespace MonomParse
 
         #region Test monomials division
         [Test]
-        [TestCase(1,"x",2,  2,"x",2, 0,5d)]
+        [TestCase(1,"x",2,  2,"x",2, "0.5")]
         [TestCase(null,"x",5,  null,"x",3, "x^2")]
         [TestCase(null, "x", null, null, "x", null, "1")]
         [TestCase(5, null, null, 2, null, null, "2.5")]

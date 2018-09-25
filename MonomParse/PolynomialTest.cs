@@ -67,12 +67,48 @@ namespace MonomParse
         [TestCase("-1x^2", "-1x^2+0x")]
         [TestCase("-x^5+x^2", "-x^5+0x^4+0x^3+x^2+0x")]
         [TestCase("-x^6-x^2-3", "-x^6+0x^5+0x^4+0x^3-x^2-3")]
-        public void TestAddMissing(string polyExpression, string expectedresult)
+        public void TestAddMissing(string polyExpression, string expectedResult)
         {
             ExpressionParser parser = new ExpressionParser();
             Polynomial poly = new Polynomial(polyExpression, parser);
             Polynomial polyWithMissing = poly.SortedAndFilledWithMissing();
-            Assert.AreEqual(expectedresult, polyWithMissing.PolynomialString());
+            Assert.AreEqual(expectedResult, polyWithMissing.PolynomialString());
         }
+
+        [TestCase(null, null)]
+        [TestCase("x+1", 1)]
+        [TestCase("x^8+x^100+1", 100)]
+        [TestCase("x^3+x^2-x^1+1", 3)]
+        public void TesPolyDegreeDegree(string polyExpression, int? expectedResult)
+        {
+            ExpressionParser parser = new ExpressionParser();
+            Polynomial poly = new Polynomial(polyExpression, parser);
+            Assert.AreEqual(expectedResult, poly.Degree());
+        }
+
+        [TestCase(null, null)]
+        [TestCase("x+1", "x")]
+        [TestCase("x^8+x^100+1", "x^100")]
+        [TestCase("x^3+x^2-x^1+1", "x^3")]
+        [TestCase("x^8-x^100+1", "-x^100")]
+        public void TesPolyHighestDegree(string polyExpression, string expectedResult)
+        {
+            ExpressionParser parser = new ExpressionParser();
+            Polynomial poly = new Polynomial(polyExpression, parser);
+            Assert.AreEqual(expectedResult, poly.GetWithHighestDegree()?.Expression);
+        }
+
+
+        [TestCase("x^8+x^100+1", "2x^8+5x^100+1", "-1x^8-4x^100+0")]
+        [TestCase("10x^8-2x^100-5", "5x^8+5x^100+1", "5x^8+3x^100-4")]
+        public void TesPolySubtract(string firstPoly, string secondPoly, string expectedResult)
+        {
+            ExpressionParser parser = new ExpressionParser();
+            Polynomial first = new Polynomial(firstPoly, parser);
+            Polynomial second = new Polynomial(secondPoly, parser);
+
+            Assert.AreEqual(expectedResult, first.Subtract(second).PolynomialString());
+        }
+
     }
 }

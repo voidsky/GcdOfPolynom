@@ -114,5 +114,14 @@ namespace MonomialParse
             return 1;
         }
 
+        public Monomial MultiplyBy(Monomial multiplicator)
+        {
+            if (!IsVariableSame(multiplicator)) throw new InvalidOperationWithMonomialsException();
+            var newCoefficient = this.coefficient * multiplicator.coefficient;
+            int? newExponent = this.exponent + multiplicator.exponent;
+            string newVariable = this.variable;
+
+            return new Monomial(newCoefficient, newVariable, newExponent, parser);
+        }
     }
 }

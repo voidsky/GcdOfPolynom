@@ -1,44 +1,36 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading.Tasks;
-using MonomialParse;
 
 namespace MonomParse
 {
-    public class MonomialStrings : IEnumerable<String>
+    public class MonomialStrings : IEnumerable<string>
     {
-        private string expression;
+        private readonly string expression;
 
         public MonomialStrings(string expression)
         {
-            this.expression = expression??"";
+            this.expression = expression ?? "";
         }
 
-        public IEnumerator<String> GetEnumerator()
+        public IEnumerator<string> GetEnumerator()
         {
-            StringBuilder str = new StringBuilder();
-            for (int x = 0; x < expression.Length; x++)
-            {
-                if ((expression[x] == '-' || expression[x] == '+') && str.Length > 0)
+            var str = new StringBuilder();
+            foreach (var character in expression)
+                if ((character == '-' || character == '+') && str.Length > 0)
                 {
-                        yield return str.ToString();
-                        str.Clear();
-                        if (expression[x] == '-')
-                            str.Append(expression[x]);
+                    yield return str.ToString();
+                    str.Clear();
+                    if (character == '-')
+                        str.Append(character);
                 }
                 else
                 {
-                    str.Append(expression[x]);
+                    str.Append(character);
                 }
 
-            }
-            if (str.Length>0)
+            if (str.Length > 0)
                 yield return str.ToString();
-
         }
 
         IEnumerator IEnumerable.GetEnumerator()

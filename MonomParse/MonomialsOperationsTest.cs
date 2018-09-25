@@ -123,6 +123,7 @@ namespace MonomParse
         [TestCase(5, null, null, 2, null, null, "2.5")]
         [TestCase(5, "x", 1, 2, "x", 2, "2.5x^-1")]
         [TestCase(5, "x", 2, 2, "x", 2, "2.5")]
+        [TestCase(-5, "x", -2, 2, "x", 2, "-2.5x^-4")]
         public void MonomialsDivisionTest1(decimal? coefficient, string variable, int? exponent,
             int? coefficient2, string variable2, int? exponent2,
             string expressionResult)
@@ -162,6 +163,20 @@ namespace MonomParse
             Monomial divisor = new Monomial(2, "x", 2, parser);
             Monomial result = monomial.DivideMonomialWithSameVariable(divisor);
             Assert.AreEqual("0", result.Expression);
+        }
+
+        [TestCase("x^2","x^2","x^4")]
+        [TestCase("2x^2", "3x^3", "6x^5")]
+        [TestCase("-2x^2", "3x^3", "-6x^5")]
+        [TestCase("0x^2", "3x^3", "0x^5")]
+        public void TestMonomialMultiplyBy(string firstExpression, string secondExpression, string resultExpression)
+        {
+            IExpressionParser parser = new ExpressionParser();
+            Monomial firstMonomial = new Monomial(firstExpression, parser);
+            Monomial secondMonomial = new Monomial(secondExpression, parser);
+            Monomial result = firstMonomial.MultiplyBy(secondMonomial);
+            Assert.AreEqual(resultExpression, result.Expression);
+
         }
         #endregion
     }

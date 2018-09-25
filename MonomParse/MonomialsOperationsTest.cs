@@ -48,7 +48,7 @@ namespace MonomParse
             IExpressionParser parser = new ExpressionParser();
             Monomial monomial = new Monomial(1, "x", 2, parser);
             Monomial monomialToAdd = new Monomial(2, "y", 2, parser);
-            Assert.Throws<InvalidOperationWithMonomialsException>(() =>
+            Assert.Throws<InvalidMonomialOperationException>(() =>
                 monomial.AddMonomialWithSameVariable(monomialToAdd));
         }
 
@@ -58,7 +58,7 @@ namespace MonomParse
             IExpressionParser parser = new ExpressionParser();
             Monomial monomial = new Monomial(1, "x", 2, parser);
             Monomial monomialToAdd = new Monomial(2, "x", 3, parser);
-            Assert.Throws<InvalidOperationWithMonomialsException>(() =>
+            Assert.Throws<InvalidMonomialOperationException>(() =>
                 monomial.AddMonomialWithSameVariable(monomialToAdd));
         }
         #endregion
@@ -100,7 +100,7 @@ namespace MonomParse
             IExpressionParser parser = new ExpressionParser();
             Monomial monomial = new Monomial(1, "x", 2, parser);
             Monomial monomialToSubtract = new Monomial(2, "y", 2, parser);
-            Assert.Throws<InvalidOperationWithMonomialsException>(() =>
+            Assert.Throws<InvalidMonomialOperationException>(() =>
                 monomial.SubtractMonomialWithSameVariable(monomialToSubtract));
         }
 
@@ -110,7 +110,7 @@ namespace MonomParse
             IExpressionParser parser = new ExpressionParser();
             Monomial monomial = new Monomial(1, "x", 2, parser);
             Monomial monomialToSubtract = new Monomial(2, "x", 3, parser);
-            Assert.Throws<InvalidOperationWithMonomialsException>(() =>
+            Assert.Throws<InvalidMonomialOperationException>(() =>
                 monomial.SubtractMonomialWithSameVariable(monomialToSubtract));
         }
         #endregion
@@ -141,7 +141,7 @@ namespace MonomParse
             IExpressionParser parser = new ExpressionParser();
             Monomial monomial = new Monomial(1, "x", 2, parser);
             Monomial divisor = new Monomial(2, "y", 3, parser);
-            Assert.Throws<InvalidOperationWithMonomialsException>(() =>
+            Assert.Throws<InvalidMonomialOperationException>(() =>
                 monomial.DivideMonomialWithSameVariable(divisor));
         }
 

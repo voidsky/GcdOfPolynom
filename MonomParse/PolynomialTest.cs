@@ -100,7 +100,9 @@ namespace MonomParse
 
 
         [TestCase("x^8+x^100+1", "2x^8+5x^100+1", "-1x^8-4x^100+0")]
-        [TestCase("10x^8-2x^100-5", "5x^8+5x^100+1", "5x^8+3x^100-4")]
+        [TestCase("10x^8-2x^100-5", "5x^8+5x^100+1", "5x^8-7x^100-6")]
+        [TestCase("10x^8", "5x^8", "5x^8")]
+        [TestCase("-10x^8", "-5x^8", "-5x^8")]
         public void TesPolySubtract(string firstPoly, string secondPoly, string expectedResult)
         {
             ExpressionParser parser = new ExpressionParser();
@@ -109,6 +111,19 @@ namespace MonomParse
 
             Assert.AreEqual(expectedResult, first.Subtract(second).PolynomialString());
         }
+
+        [TestCase("-10x^8", "5")]
+        [TestCase("-10x^8", "5x^7")]
+        public void TesPolySubtractException(string firstPoly, string secondPoly)
+        {
+            ExpressionParser parser = new ExpressionParser();
+            Polynomial first = new Polynomial(firstPoly, parser);
+            Polynomial second = new Polynomial(secondPoly, parser);
+            Assert.Throws<InvalidMonomialOperationException>(() =>
+                first.Subtract(second).PolynomialString());
+        }
+
+
 
     }
 }

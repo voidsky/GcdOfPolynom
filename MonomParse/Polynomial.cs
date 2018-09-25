@@ -94,18 +94,19 @@ namespace MonomParse
             return maxDegree;
         }
 
-        public Polynomial Divide(Polynomial divideBy)
+        public static void Divide(Polynomial divideWhat, Polynomial divideBy, Polynomial result, Polynomial reminder)
         {
-            Polynomial divident = this.SortedAndFilledWithMissing();
-            Polynomial divisor = divideBy.SortedAndFilledWithMissing();
-            divident.SortDescending();
-            divisor.SortDescending();
+            divideWhat = divideWhat.SortedAndFilledWithMissing();
+            divideBy = divideBy.SortedAndFilledWithMissing();
 
             Monomial divideResult = divident.GetWithHighestDegree()?.DivideMonomialWithSameVariable(divisor?.GetWithHighestDegree());
             Polynomial multiplicationResult = divisor.MultiplyBy(divideResult);
             Polynomial substrResult = divident.Subtract(multiplicationResult);
 
+            while (substrResult.Degree() > divisor.Degree())
+            {
 
+            }
 
             return null;
         }
@@ -113,9 +114,9 @@ namespace MonomParse
         public Polynomial Subtract(Polynomial substractBy)
         {
             if (this.Degree() != substractBy.Degree())
-                throw new System.NotImplementedException();
+                throw new InvalidMonomialOperationException();
             if (this.MonomialCount() != substractBy.MonomialCount())
-                throw new System.NotImplementedException();
+                throw new InvalidMonomialOperationException();
 
             Polynomial result = new Polynomial("", Parser);
             Monomial[] fromMonoms = this.Monomials.ToArray();

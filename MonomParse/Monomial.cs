@@ -37,21 +37,21 @@ namespace MonomialParse
 
         public Monomial AddMonomialWithSameVariable(Monomial monomialToAdd)
         {
-            if (!IsVariableAndExponentSame(monomialToAdd)) throw new InvalidOperationWithMonomialsException();
+            if (!IsVariableAndExponentSame(monomialToAdd)) throw new InvalidMonomialOperationException();
             var newCoefficient = this.coefficient + monomialToAdd.coefficient;
             return new Monomial(newCoefficient, this.variable, this.exponent, parser);
         }
 
         public Monomial SubtractMonomialWithSameVariable(Monomial monomialToSubtract)
         {
-            if (!IsVariableAndExponentSame(monomialToSubtract)) throw new InvalidOperationWithMonomialsException();
+            if (!IsVariableAndExponentSame(monomialToSubtract)) throw new InvalidMonomialOperationException();
             var newCoefficient = this.coefficient - monomialToSubtract.coefficient;
             return new Monomial(newCoefficient, this.variable, this.exponent, parser);
         }
 
         public Monomial DivideMonomialWithSameVariable(Monomial divisorMonomial)
         {
-            if (!IsVariableSame(divisorMonomial)) throw new InvalidOperationWithMonomialsException();
+            if (!IsVariableSame(divisorMonomial)) throw new InvalidMonomialOperationException();
             if (divisorMonomial.coefficient == 0) throw new DivideByZeroException();
 
             var newCoefficient = this.coefficient / divisorMonomial.coefficient;
@@ -116,7 +116,7 @@ namespace MonomialParse
 
         public Monomial MultiplyBy(Monomial multiplicator)
         {
-            if (!IsVariableSame(multiplicator)) throw new InvalidOperationWithMonomialsException();
+            if (!IsVariableSame(multiplicator)) throw new InvalidMonomialOperationException();
             var newCoefficient = this.coefficient * multiplicator.coefficient;
             int? newExponent = this.exponent + multiplicator.exponent;
             string newVariable = this.variable;

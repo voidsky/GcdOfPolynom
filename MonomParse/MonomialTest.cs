@@ -15,6 +15,7 @@ namespace MonomialParse
         [TestCase(" -2XX^5 ", "XX")]
         [TestCase(" -2X X^-5 Y Y ", "X")]
         [TestCase("-5x^2", "x")]
+        [TestCase("-x^2", "x")]
         public void ParseMonomialVariableResultsIn(string expression, string expectedResult)
         {
             IExpressionParser parser = new ExpressionParser();
@@ -28,6 +29,7 @@ namespace MonomialParse
         [TestCase(" -55 ", -55)]
         [TestCase("+1", 1)]
         [TestCase("-5x^2", -5)]
+        [TestCase("-x^2", -1)]
         public void ParseMonomialCoefficientResultsIn(string expression, int expectedResult)
         {
             IExpressionParser parser = new ExpressionParser();
@@ -40,6 +42,7 @@ namespace MonomialParse
         [TestCase("x", 1)]
         [TestCase("", 1)]
         [TestCase("-5x^-2", -2)]
+        [TestCase("-x^2", 2)]
         public void ParseMonomialExponentResultsIn(string expression, int expectedResult)
         {
             IExpressionParser parser = new ExpressionParser();

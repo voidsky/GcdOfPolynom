@@ -27,6 +27,8 @@ namespace MonomParse
                 {
                         yield return str.ToString();
                         str.Clear();
+                        if (expression[x] == '-')
+                            str.Append(expression[x]);
                 }
                 else
                 {
@@ -34,7 +36,8 @@ namespace MonomParse
                 }
 
             }
-            yield return str.ToString();
+            if (str.Length>0)
+                yield return str.ToString();
 
         }
 

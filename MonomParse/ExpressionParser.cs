@@ -10,7 +10,7 @@ namespace MonomialParse
     public class ExpressionParser : IExpressionParser
     {
         string expressionRegex =
-            @"(?<coeficient>\s*[-]?\d+\s*?)?[\s]?"
+            @"(?<coeficient>\s*[-]?\d*\s*?)?[\s]?"
            +@"(?<variable>\s*[A-Za-z]+\s*)?\s*"
            +@"\^?\s*(?<exponent>[-]?\d+)?";
 
@@ -25,7 +25,8 @@ namespace MonomialParse
         public decimal ExtractCoefficient(string expression)
         {
             var stringCoefficient = ExtractExpressionPart(expression, "coeficient");
-            if (int.TryParse(stringCoefficient, out var coefficient))
+            if (stringCoefficient == "-") stringCoefficient = "-1";
+                if (int.TryParse(stringCoefficient, out var coefficient))
                 return coefficient;
             return 1;
         }

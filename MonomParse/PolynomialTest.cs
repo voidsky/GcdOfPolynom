@@ -50,6 +50,7 @@ namespace MonomParse
         [TestCase("x^2", "x^2")]
         [TestCase("x+x^2", "x^2+x")]
         [TestCase("5-2x^2+3x^3", "3x^3-2x^2+5")]
+        [TestCase("-x^5+x^2", "-x^5+x^2")]
         public void TestSortPolynomial(string polyExpression, string polyExpressionSorted)
         {
             ExpressionParser parser = new ExpressionParser();
@@ -58,6 +59,20 @@ namespace MonomParse
             Assert.AreEqual(polyExpressionSorted, poly.PolynomialString());
 
 
+        }
+
+        [TestCase(null, "")]
+        [TestCase("1", "1")]
+        [TestCase("x^2", "x^2+0x")]
+        [TestCase("-1x^2", "-1x^2+0x")]
+        [TestCase("-x^5+x^2", "-x^5+0x^4+0x^3+x^2+0x")]
+        [TestCase("-x^6-x^2-3", "-x^6+0x^5+0x^4+0x^3-x^2-3")]
+        public void TestAddMissing(string polyExpression, string expectedresult)
+        {
+            ExpressionParser parser = new ExpressionParser();
+            Polynomial poly = new Polynomial(polyExpression, parser);
+            Polynomial polyWithMissing = poly.SortedAndFilledWithMissing();
+            Assert.AreEqual(expectedresult, polyWithMissing.PolynomialString());
         }
     }
 }

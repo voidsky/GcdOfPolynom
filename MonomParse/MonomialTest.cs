@@ -40,10 +40,10 @@ namespace MonomialParse
         [TestCase("-5x^2", 2)]
         [TestCase("-5x", 1)]
         [TestCase("x", 1)]
-        [TestCase("", 1)]
+        [TestCase("", null)]
         [TestCase("-5x^-2", -2)]
         [TestCase("-x^2", 2)]
-        public void ParseMonomialExponentResultsIn(string expression, int expectedResult)
+        public void ParseMonomialExponentResultsIn(string expression, int? expectedResult)
         {
             IExpressionParser parser = new ExpressionParser();
             Monomial monomial = new Monomial(expression, parser);

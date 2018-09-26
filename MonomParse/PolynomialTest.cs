@@ -66,7 +66,8 @@ namespace MonomParse
         [TestCase("x^2", "x^2+0x")]
         [TestCase("-1x^2", "-1x^2+0x")]
         [TestCase("-x^5+x^2", "-x^5+0x^4+0x^3+x^2+0x")]
-        [TestCase("-x^6-x^2-3", "-x^6+0x^5+0x^4+0x^3-x^2-3")]
+        [TestCase("-x^6-x^2-3", "-x^6+0x^5+0x^4+0x^3-x^2+0x-3")]
+        [TestCase("5-2x^2+3x^3", "3x^3-2x^2+0x+5")]
         public void TestAddMissing(string polyExpression, string expectedResult)
         {
             ExpressionParser parser = new ExpressionParser();
@@ -79,6 +80,7 @@ namespace MonomParse
         [TestCase("x+1", 1)]
         [TestCase("x^8+x^100+1", 100)]
         [TestCase("x^3+x^2-x^1+1", 3)]
+        [TestCase("5-2x^2+3x^3", 3)]
         public void TesPolyDegreeDegree(string polyExpression, int? expectedResult)
         {
             ExpressionParser parser = new ExpressionParser();
@@ -91,6 +93,7 @@ namespace MonomParse
         [TestCase("x^8+x^100+1", "x^100")]
         [TestCase("x^3+x^2-x^1+1", "x^3")]
         [TestCase("x^8-x^100+1", "-x^100")]
+        [TestCase("5-2x^2+3x^3", "3x^3")]
         public void TesPolyHighestDegree(string polyExpression, string expectedResult)
         {
             ExpressionParser parser = new ExpressionParser();
@@ -121,6 +124,21 @@ namespace MonomParse
             Polynomial second = new Polynomial(secondPoly, parser);
             Assert.Throws<InvalidMonomialOperationException>(() =>
                 first.Subtract(second).PolynomialString());
+
+        }
+
+        [TestCase("5-2x^2+3x^3","x^2-1","3x-2")]
+        public void TestPolyLongDivision(string whatExpr, string byExptr, string resultExpr)
+        {
+            ExpressionParser parser = new ExpressionParser();
+            Polynomial first = new Polynomial(whatExpr, parser);
+            Polynomial second = new Polynomial(byExptr, parser);
+            Polynomial result = new Polynomial("", parser);
+            Polynomial reminder = new Polynomial("", parser);
+
+            second.Divide(first, second, result, reminder);
+            Assert.AreEqual(resultExpr, result.PolynomialString());
+
         }
 
 

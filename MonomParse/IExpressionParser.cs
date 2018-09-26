@@ -8,7 +8,7 @@ namespace MonomialParse
 {
     public interface IExpressionParser
     {
-        int ExtractExponent(string expression);
+        int? ExtractExponent(string expression);
         decimal ExtractCoefficient(string expression);
         string ExtractVariable(string expression);
         string CombineStringExpression(decimal? coefficient, string variable, int? exponent);

@@ -14,7 +14,7 @@ namespace MonomialParse
            +@"(?<variable>\s*[A-Za-z]+\s*)?\s*"
            +@"\^?\s*(?<exponent>[-]?\d+)?";
 
-        public int ExtractExponent(string expression)
+        public int? ExtractExponent(string expression)
         {
             var stringExponent = ExtractExpressionPart(expression, "exponent");
             if (int.TryParse(stringExponent, out var exponent))

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using MonomialParse;
 
@@ -55,11 +56,13 @@ namespace MonomParse
             foreach (var monom in Monomials)
             {
                 if (monom.Variable == null) continue;
-                variableName = monom.Variable;
+                if (variableName.Length == 0) variableName = monom.Variable;
 
                 var exponent = monom.Exponent;
-                if (lastExponent != null && lastExponent - 1 != exponent)
-                    AddExponentRange(polyWithMissing, lastExponent - 1, exponent, variableName);
+                var expectedExponent = lastExponent - 1;
+
+                if (lastExponent != null && expectedExponent != exponent)
+                    AddExponentRange(polyWithMissing, expectedExponent, exponent??0, variableName);
                 polyWithMissing.AddMonomial(monom);
                 lastExponent = exponent;
             }
@@ -94,21 +97,28 @@ namespace MonomParse
             return maxDegree;
         }
 
-        public static void Divide(Polynomial divideWhat, Polynomial divideBy, Polynomial result, Polynomial reminder)
+        public void Divide(Polynomial divideWhat, Polynomial divideBy, Polynomial result, Polynomial reminder)
         {
+            result = new Polynomial("", Parser);
             divideWhat = divideWhat.SortedAndFilledWithMissing();
             divideBy = divideBy.SortedAndFilledWithMissing();
 
-            Monomial divideResult = divident.GetWithHighestDegree()?.DivideMonomialWithSameVariable(divisor?.GetWithHighestDegree());
-            Polynomial multiplicationResult = divisor.MultiplyBy(divideResult);
-            Polynomial substrResult = divident.Subtract(multiplicationResult);
+            Monomial highestMonomial = divideWhat.GetWithHighestDegree();
+            Monomial byHighest = divideBy?.GetWithHighestDegree();
+            Monomial divideResult = highestMonomial.DivideMonomialWithSameVariable(byHighest);
+            Polynomial multiplicationResult = divideBy.MultiplyBy(divideResult);
+            Polynomial subtractResult = divideWhat.Subtract(multiplicationResult);
+            result.AddMonomial(divideResult);
 
-            while (substrResult.Degree() > divisor.Degree())
+            while (subtractResult.Degree() > divideBy.Degree())
             {
-
+                divideResult = subtractResult.GetWithHighestDegree()?.
+                    DivideMonomialWithSameVariable(divideBy?.GetWithHighestDegree());
+                multiplicationResult = divideBy.MultiplyBy(divideResult);
+                subtractResult = subtractResult.Subtract(multiplicationResult);
+                result.AddMonomial(divideResult);
             }
 
-            return null;
         }
 
         public Polynomial Subtract(Polynomial substractBy)

@@ -9,7 +9,7 @@ namespace MonomialParse
         private string expression;
         private string variable;
         private decimal coefficient;
-        private int exponent;
+        private int? exponent;
         private IExpressionParser parser;
 
         public Monomial(string expression, IExpressionParser parser)
@@ -32,7 +32,14 @@ namespace MonomialParse
             this.expression = fromExpression;
             this.variable = parser.ExtractVariable(fromExpression);
             this.coefficient = parser.ExtractCoefficient(fromExpression);
-            this.exponent = parser.ExtractExponent(fromExpression);
+            if (variable.Length > 0)
+            {
+                this.exponent = parser.ExtractExponent(fromExpression);
+            }
+            else
+            {
+                this.exponent = null;
+            }
         }
 
         public Monomial AddMonomialWithSameVariable(Monomial monomialToAdd)
@@ -104,13 +111,16 @@ namespace MonomialParse
         
        public int CompareTo(Monomial that)
         {
-            if (this.exponent > that.exponent) return -1;
+            if (this.exponent > that.exponent || that.exponent == null) return -1;
+            if (this.exponent < that.exponent || this.exponent == null) return 1;
+
             if (this.exponent == that.exponent)
             {
                 if (this.coefficient > that.coefficient) return -1;
                 if (this.coefficient < that.coefficient) return 1;
                 return 0;
             }
+
             return 1;
         }
 

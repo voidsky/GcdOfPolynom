@@ -72,7 +72,7 @@ namespace MonomParse
             IExpressionParser parser = new ExpressionParser();
             Monomial monomial1 = new Monomial(expr1, parser);
             Monomial monomial2 = new Monomial(expr2, parser);
-            Monomial result = monomial1.SubtractMonomialWithSameVariable(monomial2);
+            Monomial result = monomial1.Subtract(monomial2);
             Assert.AreEqual(exprResult, result.Expression);
         }
 
@@ -82,7 +82,7 @@ namespace MonomParse
             IExpressionParser parser = new ExpressionParser();
             Monomial monomial = new Monomial(1, "x", 2, parser);
             Monomial monomialToSubtract = new Monomial(2, "x", 2, parser);
-            Monomial result = monomial.SubtractMonomialWithSameVariable(monomialToSubtract);
+            Monomial result = monomial.Subtract(monomialToSubtract);
             Assert.AreEqual("-1x^2", result.Expression);
         }
 
@@ -92,7 +92,7 @@ namespace MonomParse
             IExpressionParser parser = new ExpressionParser();
             Monomial monomial = new Monomial(1, "x", null, parser);
             Monomial monomialToSubtract = new Monomial(2, "x", null, parser);
-            Monomial result = monomial.SubtractMonomialWithSameVariable(monomialToSubtract);
+            Monomial result = monomial.Subtract(monomialToSubtract);
             Assert.AreEqual("-1x", result.Expression);
         }
 
@@ -102,7 +102,7 @@ namespace MonomParse
             IExpressionParser parser = new ExpressionParser();
             Monomial monomial = new Monomial(5, "", null, parser);
             Monomial monomialToSubtract = new Monomial(2, "", null, parser);
-            Monomial result = monomial.SubtractMonomialWithSameVariable(monomialToSubtract);
+            Monomial result = monomial.Subtract(monomialToSubtract);
             Assert.AreEqual("3", result.Expression);
         }
 

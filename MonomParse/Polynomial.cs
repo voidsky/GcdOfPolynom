@@ -1,7 +1,9 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using MonomialParse;
 
@@ -9,17 +11,19 @@ namespace MonomParse
 {
     public class Polynomial
     {
+        public List<Monomial> Monomials { get; set; }
+        private IExpressionParser Parser { get; }
+
+
         public Polynomial(string expression, IExpressionParser parser)
         {
             Parser = parser;
             Monomials = new List<Monomial>();
             var monomialStrings = new MonomialStrings(expression);
+
             foreach (var monomialString in monomialStrings)
                 Monomials.Add(new Monomial(monomialString, parser));
         }
-
-        public List<Monomial> Monomials { get; set;  }
-        private IExpressionParser Parser { get; }
 
         public int MonomialCount()
         {
@@ -48,28 +52,50 @@ namespace MonomParse
             return str.ToString();
         }
 
-        public void SortAndFillWithMissing()
+        public void FillWithMissing(int from, string varName)
         {
-            int? lastExponent = null;
-            var variableName = "";
-            var polyWithMissing = new Polynomial("", Parser);
-            SortDescending();
-            foreach (var monom in Monomials)
+            List<Monomial> listWithMissing = new List<Monomial>();
+
+            for (int x = from; x >= 1; x--)
             {
-                if (monom.Variable == null) continue;
-                if (variableName.Length == 0) variableName = monom.Variable;
-
-                var exponent = monom.Exponent;
-                var expectedExponent = lastExponent - 1;
-
-                if (lastExponent != null && expectedExponent != exponent)
-                    AddExponentRange(polyWithMissing, expectedExponent, exponent??0, variableName);
-                polyWithMissing.AddMonomial(monom);
-                lastExponent = exponent;
+                Monomial testing = this.GetWithExponent(x);
+                if (testing != null)
+                {
+                    listWithMissing.Add(testing);
+                }
+                else
+                {
+                    listWithMissing.Add(new Monomial(0, varName, x, Parser));
+                }
             }
 
-            AddExponentRange(polyWithMissing, lastExponent - 1, 0, variableName);
-            this.Monomials = polyWithMissing.Monomials;
+            listWithMissing.Add(new Monomial(this.SumFreeCoeficients(), null, null, Parser));
+            this.Monomials = listWithMissing;
+        }
+
+        private Monomial GetWithExponent(int i)
+        {
+            foreach (var monom in Monomials)
+            {
+                if (monom.HasVariable() && monom.Exponent == i)
+                {
+                    return monom;
+                }
+            }
+            return null;
+        }
+
+        public decimal SumFreeCoeficients()
+        {
+            decimal sum = 0;
+            foreach (var monom in Monomials)
+            {
+                if (!monom.HasVariable())
+                {
+                    sum += monom.Coefficient;
+                }
+            }
+            return sum;
         }
 
         private void AddExponentRange(Polynomial toPolynomial, int? fromExponent, int? toExponent, string variableName)
@@ -87,7 +113,7 @@ namespace MonomParse
             int? maxDegree = null;
             foreach (Monomial monomial in Monomials)
             {
-                if (monomial.Variable.Length > 0 &&
+                if (monomial.HasVariable() &&
                     monomial.Coefficient != 0)
                 {
                     if (monomial.Exponent > maxDegree || maxDegree == null)
@@ -156,30 +182,29 @@ namespace MonomParse
             return coefficientSum == 0;
         }
 
-        public Polynomial Subtract(Polynomial substractBy)
+        public Polynomial Subtract(Polynomial that)
         {
-            if (this.Degree() != substractBy.Degree())
-                throw new InvalidMonomialOperationException();
-
             Polynomial result = new Polynomial("", Parser);
-            Monomial[] fromMonoms = this.Monomials.ToArray();
-            Monomial[] subtractMonoms = substractBy.Monomials.ToArray();
+            int maxDegree = this.Degree()??0;
+            if (that.Degree() > this.Degree()) maxDegree = that.Degree()??0;
 
-            for (int x = 0; x < this.MonomialCount(); x++)
+            Polynomial fromTemp = this;
+            Polynomial substrTemp = that;
+
+            AddExponentRange(fromTemp,maxDegree,fromTemp.Degree(), fromTemp.GetWithHighestDegree().Variable);
+            fromTemp.SortAndFillWithMissing();
+            AddExponentRange(substrTemp, maxDegree, substrTemp.Degree(), substrTemp.GetWithHighestDegree().Variable);
+            substrTemp.SortAndFillWithMissing();
+
+            Monomial[] fromMonom = fromTemp.Monomials.ToArray();
+            Monomial[] thatMonom = substrTemp.Monomials.ToArray();
+
+            for (int x = 0; x < fromTemp.MonomialCount(); x++)
             {
-                Monomial subtractResult;
-                if (x < substractBy.MonomialCount())
-                {
-                    subtractResult = fromMonoms[x].SubtractMonomialWithSameVariable(subtractMonoms[x]);
-                }
-                else
-                {
-                    subtractResult = fromMonoms[x];
-                }
-
+                var subtractResult = fromMonom[x].Subtract(thatMonom[x]);
                 result.AddMonomial(subtractResult);
             }
-
+            result.RemoveZeroCoefMonoms();
             return result;
         }
 
@@ -201,8 +226,16 @@ namespace MonomParse
             {
                 if (monomial.Exponent == degree) return monomial;
             }
-
             return null;
+        }
+
+        public Polynomial Gcd(Polynomial with)
+        {
+            Polynomial temp = new Polynomial("",Parser);
+            if (this.Equals(with)) return temp = this;
+            if (this.Degree() >= with.Degree()) temp = Gcd(this.Subtract(with));
+            if (with.Degree() > this.Degree()) temp = Gcd(with.Subtract(this));
+            return temp;
         }
     }
 }

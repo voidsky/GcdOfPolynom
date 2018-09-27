@@ -49,9 +49,9 @@ namespace MonomialParse
             return new Monomial(newCoefficient, this.variable, this.exponent, parser);
         }
 
-        public Monomial SubtractMonomialWithSameVariable(Monomial monomialToSubtract)
+        public Monomial Subtract(Monomial that)
         {
-            var newCoefficient = this.coefficient - monomialToSubtract.coefficient;
+            var newCoefficient = this.coefficient - that.coefficient;
             return new Monomial(newCoefficient, this.variable, this.exponent, parser);
         }
 
@@ -109,7 +109,8 @@ namespace MonomialParse
         }
         
        public int CompareTo(Monomial that)
-        {
+       {
+           if (this.variable?.Length == 0 && that.variable?.Length == 0) return 0;
             if (this.exponent > that.exponent || that.exponent == null) return -1;
             if (this.exponent < that.exponent || this.exponent == null) return 1;
 
@@ -134,6 +135,11 @@ namespace MonomialParse
             if (this.variable.Length == 0 && mult.variable.Length > 0) newVariable = mult.variable;
 
             return new Monomial(newCoefficient, newVariable, newExponent, parser);
+        }
+
+        public bool HasVariable()
+        {
+            return (this.variable != null) && (variable.Length > 0);
         }
     }
 }

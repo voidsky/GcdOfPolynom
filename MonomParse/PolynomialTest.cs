@@ -61,11 +61,11 @@ namespace MonomParse
 
         }
 
-        [TestCase(null, "")]
+        [TestCase(null, "0")]
         [TestCase("1", "1")]
-        [TestCase("x^2", "x^2+0x")]
-        [TestCase("-1x^2", "-1x^2+0x")]
-        [TestCase("-x^5+x^2", "-x^5+0x^4+0x^3+x^2+0x")]
+        [TestCase("x^2", "x^2+0x+0")]
+        [TestCase("-1x^2", "-1x^2+0x+0")]
+        [TestCase("-x^5+x^2", "-x^5+0x^4+0x^3+x^2+0x+0")]
         [TestCase("-x^6-x^2-3", "-x^6+0x^5+0x^4+0x^3-x^2+0x-3")]
         [TestCase("5-2x^2+3x^3", "3x^3-2x^2+0x+5")]
         public void TestAddMissing(string polyExpression, string expectedResult)
@@ -102,10 +102,12 @@ namespace MonomParse
         }
 
 
-        [TestCase("x^8+x^100+1", "2x^8+5x^100+1", "-1x^8-4x^100+0")]
-        [TestCase("10x^8-2x^100-5", "5x^8+5x^100+1", "5x^8-7x^100-6")]
+        [TestCase("x^8+x^100+1", "2x^8+5x^100+1", "-4x^100-1x^8")]
+        [TestCase("10x^8-2x^100-5", "5x^8+5x^100+1", "-7x^100+5x^8-6")]
         [TestCase("10x^8", "5x^8", "5x^8")]
         [TestCase("-10x^8", "-5x^8", "-5x^8")]
+        [TestCase("10x^8+5x^4", "2x^9+2x^4+5", "-2x^9+10x^8+3x^4-5")]
+
         public void TesPolySubtract(string firstPoly, string secondPoly, string expectedResult)
         {
             ExpressionParser parser = new ExpressionParser();
@@ -115,17 +117,6 @@ namespace MonomParse
             Assert.AreEqual(expectedResult, first.PolynomialString());
         }
 
-        [TestCase("-10x^8", "5")]
-        [TestCase("-10x^8", "5x^7")]
-        public void TesPolySubtractException(string firstPoly, string secondPoly)
-        {
-            ExpressionParser parser = new ExpressionParser();
-            Polynomial first = new Polynomial(firstPoly, parser);
-            Polynomial second = new Polynomial(secondPoly, parser);
-            Assert.Throws<InvalidMonomialOperationException>(() =>
-                first.Subtract(second));
-
-        }
 
         [TestCase("x^2+0x-1", "1", "x^2+0x-1")]
         [TestCase("x^2+0x-1", "0", "0x^2+0x+0")]
@@ -163,6 +154,17 @@ namespace MonomParse
             Assert.AreEqual(resultExpr, result.PolynomialString());
             Assert.AreEqual(reminderExpr, reminder.PolynomialString());
         }
+
+        [TestCase("x^2+7x+6","x^2-5x-6","x+1")]
+        public void TestPolyGcd(string whatExpr, string withExpr, string resultExpr)
+        {
+            ExpressionParser parser = new ExpressionParser();
+            Polynomial first = new Polynomial(whatExpr, parser);
+            Polynomial second = new Polynomial(withExpr, parser);
+            //Polynomial reminder = first.Gcd(second);
+            //Assert.AreEqual(resultExpr, reminder.PolynomialString());
+        }
+
 
 
 

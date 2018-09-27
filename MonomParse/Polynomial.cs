@@ -175,7 +175,7 @@ namespace MonomParse
             return result;
         }
 
-        public Polynomial Divide(Polynomial n, Polynomial d, out Polynomial reminder)
+        public Polynomial Divide( Polynomial d, out Polynomial reminder)
         {
             /* function n / d:
                   require d ≠ 0
@@ -186,7 +186,7 @@ namespace MonomParse
                      q ← q + t
                      r ← r − t * d
                   return (q, r)*/
-
+            Polynomial n = (Polynomial)this.Clone();
             n.SortDescending();
             n.FillWithMissing((int)n.Degree(),n.FirstVariableName());
             d.SortDescending();
@@ -246,13 +246,19 @@ namespace MonomParse
             return null;
         }
 
-        public Polynomial Gcd(Polynomial with)
+        public Polynomial Gcd(Polynomial other)
         {
-            Polynomial temp = new Polynomial(null,Parser);
-            if (this.Equals(with)) return temp = this;
-            if (this.Degree() >= with.Degree()) temp = Gcd(this.Subtract(with));
-            if (with.Degree() > this.Degree()) temp = Gcd(with.Subtract(this));
-            return temp;
+            Polynomial r;
+            Polynomial q = this.Divide(other, out r);
+            if (r.IsZero())
+            {
+                return q;
+            }
+            else
+            {
+                return other.Gcd(r);
+            }
+
         }
 
         public object Clone()

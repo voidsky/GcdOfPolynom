@@ -144,13 +144,14 @@ namespace MonomParse
         [TestCase("x^2", "x", "x", "0")]
         [TestCase("x^2+1", "x", "x", "1")]
         [TestCase("3x^3+4x+11", "x^2-3x+2", "3x+9", "25x-7")]
+        [TestCase("x^2+7x+6", "x^2-5x-6", "1", "12x+12")]
         public void TestPolyLongDivision(string whatExpr, string byExptr, string resultExpr, string reminderExpr)
         {
             ExpressionParser parser = new ExpressionParser();
             Polynomial first = new Polynomial(whatExpr, parser);
             Polynomial second = new Polynomial(byExptr, parser);
             Polynomial reminder;
-            Polynomial result = second.Divide(first, second, out reminder);
+            Polynomial result = first.Divide(second, out reminder);
             Assert.AreEqual(resultExpr, result.Expression());
             Assert.AreEqual(reminderExpr, reminder.Expression());
         }
@@ -161,8 +162,8 @@ namespace MonomParse
             ExpressionParser parser = new ExpressionParser();
             Polynomial first = new Polynomial(whatExpr, parser);
             Polynomial second = new Polynomial(withExpr, parser);
-            //Polynomial reminder = first.Gcd(second);
-            //Assert.AreEqual(resultExpr, reminder.Expression());
+            Polynomial reminder = first.Gcd(second);
+            Assert.AreEqual(resultExpr, reminder.Expression());
         }
 
         [TestCase("x^2+7x+6", "x^2+7x+6")]

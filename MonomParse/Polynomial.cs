@@ -175,6 +175,44 @@ namespace MonomParse
             return result;
         }
 
+        public Polynomial Divide(Polynomial n, Polynomial d, out Polynomial reminder)
+        {
+            /* function n / d:
+                  require d ≠ 0
+                  q ← 0
+                  r ← n       # At each step n = d × q + r
+                  while r ≠ 0 AND degree(r) ≥ degree(d):
+                     t ← lead(r)/lead(d)     # Divide the leading terms
+                     q ← q + t
+                     r ← r − t * d
+                  return (q, r)*/
+
+            n.SortDescending();
+            n.FillWithMissing((int)n.Degree(),n.FirstVariableName());
+            d.SortDescending();
+            d.FillWithMissing((int)d.Degree(), d.FirstVariableName());
+
+            Polynomial q = new Polynomial("", Parser);
+            Polynomial r = n;
+
+            while (!r.IsZero() && r.Degree() >= d.Degree())
+            {
+                Monomial lead_r = r.GetWithHighestDegree();
+                Monomial lead_d = d.GetWithHighestDegree();
+                Monomial t = lead_r.DivideMonomialWithSameVariable(lead_d);
+                q.AddMonomial(t);
+                var multiplied = d.MultiplyBy(t);
+                r = r.Subtract(multiplied);
+                r.RemoveZeroCoefMonoms();
+                r.SortDescending();
+                r = r.FillWithMissing(r.Degree()??0, r.FirstVariableName());
+            }
+
+            reminder = r;
+            return q;
+        }
+
+
         private string FirstVariableName()
         {
             foreach (var monom in Monomials)

@@ -9,7 +9,7 @@ using MonomialParse;
 
 namespace MonomParse
 {
-    public class Polynomial
+    public class Polynomial : ICloneable, IEquatable<Polynomial>
     {
         public List<Monomial> Monomials { get; set; }
         private IExpressionParser Parser { get; }
@@ -25,7 +25,7 @@ namespace MonomParse
                 Monomials.Add(new Monomial(monomialString, parser));
         }
 
-        public int MonomialCount()
+        public int Count()
         {
             return Monomials.Count();
         }
@@ -40,7 +40,7 @@ namespace MonomParse
             Monomials.Add(monom);
         }
 
-        public string PolynomialString()
+        public string Expression()
         {
             var str = new StringBuilder();
             foreach (var monomial in Monomials)
@@ -52,25 +52,27 @@ namespace MonomParse
             return str.ToString();
         }
 
-        public void FillWithMissing(int from, string varName)
+        public Polynomial FillWithMissing(int from, string varName)
         {
-            List<Monomial> listWithMissing = new List<Monomial>();
+            Polynomial filled = new Polynomial(null, Parser);
 
             for (int x = from; x >= 1; x--)
             {
                 Monomial testing = this.GetWithExponent(x);
+
                 if (testing != null)
                 {
-                    listWithMissing.Add(testing);
+                    filled.AddMonomial(new Monomial(testing));
                 }
                 else
                 {
-                    listWithMissing.Add(new Monomial(0, varName, x, Parser));
+                    filled.AddMonomial(new Monomial(0, varName, x, Parser));
                 }
             }
 
-            listWithMissing.Add(new Monomial(this.SumFreeCoeficients(), null, null, Parser));
-            this.Monomials = listWithMissing;
+            filled.AddMonomial(new Monomial(this.SumFreeCoeficients(), null, null, Parser));
+
+            return filled;
         }
 
         private Monomial GetWithExponent(int i)
@@ -98,23 +100,12 @@ namespace MonomParse
             return sum;
         }
 
-        private void AddExponentRange(Polynomial toPolynomial, int? fromExponent, int? toExponent, string variableName)
-        {
-            while (toExponent < fromExponent)
-            {
-                var dummyMonom = new Monomial(0, variableName, fromExponent, Parser);
-                toPolynomial.AddMonomial(dummyMonom);
-                fromExponent--;
-            }
-        }
-
         public int? Degree()
         {
             int? maxDegree = null;
             foreach (Monomial monomial in Monomials)
             {
-                if (monomial.HasVariable() &&
-                    monomial.Coefficient != 0)
+                if (monomial.HasVariable())
                 {
                     if (monomial.Exponent > maxDegree || maxDegree == null)
                         maxDegree = monomial.Exponent;
@@ -124,39 +115,7 @@ namespace MonomParse
             return maxDegree;
         }
 
-        public Polynomial Divide(Polynomial n, Polynomial d, out Polynomial reminder)
-        {
-            /* function n / d:
-                  require d ≠ 0
-                  q ← 0
-                  r ← n       # At each step n = d × q + r
-                  while r ≠ 0 AND degree(r) ≥ degree(d):
-                     t ← lead(r)/lead(d)     # Divide the leading terms
-                     q ← q + t
-                     r ← r − t * d
-                  return (q, r)*/
-             
-            n.SortAndFillWithMissing();
-            d.SortAndFillWithMissing();
-
-            Polynomial q = new Polynomial("", Parser);
-            Polynomial r = n;
-
-            while (!r.IsZero() && r.Degree() >= d.Degree())
-            {
-                Monomial lead_r = r.GetWithHighestDegree();
-                Monomial lead_d = d.GetWithHighestDegree();
-                Monomial t = lead_r.DivideMonomialWithSameVariable(lead_d);
-                q.AddMonomial(t);
-                var multiplied = d.MultiplyBy(t);
-                r = r.Subtract(multiplied);
-                r.RemoveZeroCoefMonoms();
-                r.SortAndFillWithMissing();
-            }
-
-            reminder = r;
-            return q;
-        }
+ 
 
         private void RemoveZeroCoefMonoms()
         {
@@ -182,30 +141,50 @@ namespace MonomParse
             return coefficientSum == 0;
         }
 
-        public Polynomial Subtract(Polynomial that)
+        private int? MaxDegree(Polynomial other)
         {
-            Polynomial result = new Polynomial("", Parser);
-            int maxDegree = this.Degree()??0;
-            if (that.Degree() > this.Degree()) maxDegree = that.Degree()??0;
+            int? maxDegree = this.Degree();
+            if (other.Degree() > this.Degree()) maxDegree = other.Degree();
+            if (maxDegree == null) maxDegree = 0;
+            return maxDegree;
+        }
 
-            Polynomial fromTemp = this;
-            Polynomial substrTemp = that;
+        public Polynomial Subtract(Polynomial other)
+        {
+            Polynomial result = new Polynomial(null, Parser);
+            int? maxDegree = MaxDegree(other);
 
-            AddExponentRange(fromTemp,maxDegree,fromTemp.Degree(), fromTemp.GetWithHighestDegree().Variable);
-            fromTemp.SortAndFillWithMissing();
-            AddExponentRange(substrTemp, maxDegree, substrTemp.Degree(), substrTemp.GetWithHighestDegree().Variable);
-            substrTemp.SortAndFillWithMissing();
+            Polynomial fromTemp = FillWithMissing((int)maxDegree, FirstVariableName());
+            Polynomial substrTemp = other.FillWithMissing((int)maxDegree, FirstVariableName());
+            fromTemp.SortDescending();
+            substrTemp.SortDescending();
 
-            Monomial[] fromMonom = fromTemp.Monomials.ToArray();
-            Monomial[] thatMonom = substrTemp.Monomials.ToArray();
-
-            for (int x = 0; x < fromTemp.MonomialCount(); x++)
+            using (var e1 = fromTemp.Monomials.GetEnumerator())
+            using (var e2 = substrTemp.Monomials.GetEnumerator())
             {
-                var subtractResult = fromMonom[x].Subtract(thatMonom[x]);
-                result.AddMonomial(subtractResult);
+                while (e1.MoveNext() && e2.MoveNext())
+                {
+                    var item1 = e1.Current;
+                    var item2 = e2.Current;
+                    var subtractResult = item1.Subtract(item2);
+                    result.AddMonomial(subtractResult);
+                }
             }
+
             result.RemoveZeroCoefMonoms();
             return result;
+        }
+
+        private string FirstVariableName()
+        {
+            foreach (var monom in Monomials)
+            {
+                if (monom.HasVariable())
+                {
+                    return monom.Variable;
+                }
+            }
+            return null;
         }
 
         public Polynomial MultiplyBy(Monomial mult)
@@ -231,11 +210,39 @@ namespace MonomParse
 
         public Polynomial Gcd(Polynomial with)
         {
-            Polynomial temp = new Polynomial("",Parser);
+            Polynomial temp = new Polynomial(null,Parser);
             if (this.Equals(with)) return temp = this;
             if (this.Degree() >= with.Degree()) temp = Gcd(this.Subtract(with));
             if (with.Degree() > this.Degree()) temp = Gcd(with.Subtract(this));
             return temp;
+        }
+
+        public object Clone()
+        {
+            Polynomial clone = new Polynomial(null, Parser);
+            foreach (Monomial monomial in Monomials)
+            {
+                clone.AddMonomial((Monomial)monomial.Clone());
+            }
+            return clone;
+        }
+
+        public bool Equals(Polynomial other)
+        {
+            return this.Expression().Equals(other.Expression());
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Polynomial) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (Monomials != null ? Monomials.GetHashCode() : 0);
         }
     }
 }

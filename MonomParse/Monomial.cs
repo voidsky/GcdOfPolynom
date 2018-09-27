@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace MonomialParse
 {
-    public class Monomial
+    public class Monomial : ICloneable
     {
         private string expression;
         private string variable;
@@ -26,6 +26,16 @@ namespace MonomialParse
             this.exponent = exponent;
             this.expression = parser.CombineStringExpression(this.coefficient, this.variable, this.exponent);
         }
+
+        public Monomial(Monomial from)
+        {
+            this.parser = from.parser;
+            this.coefficient = from.coefficient;
+            this.variable = from.variable;
+            this.exponent = from.exponent;
+            this.expression = parser.CombineStringExpression(this.coefficient, this.variable, this.exponent);
+        }
+
 
         private void ParseExpression(string fromExpression)
         {
@@ -140,6 +150,15 @@ namespace MonomialParse
         public bool HasVariable()
         {
             return (this.variable != null) && (variable.Length > 0);
+        }
+
+        public object Clone()
+        {
+            Monomial clone = new Monomial(this.coefficient,
+                this.variable,
+                this.exponent,
+                this.parser);
+            return clone;
         }
     }
 }

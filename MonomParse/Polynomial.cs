@@ -100,6 +100,16 @@ namespace MonomParse
 
         public Polynomial Divide(Polynomial n, Polynomial d, out Polynomial reminder)
         {
+            /* function n / d:
+                  require d ≠ 0
+                  q ← 0
+                  r ← n       # At each step n = d × q + r
+                  while r ≠ 0 AND degree(r) ≥ degree(d):
+                     t ← lead(r)/lead(d)     # Divide the leading terms
+                     q ← q + t
+                     r ← r − t * d
+                  return (q, r)*/
+             
             n.SortAndFillWithMissing();
             d.SortAndFillWithMissing();
 
@@ -114,7 +124,7 @@ namespace MonomParse
                 q.AddMonomial(t);
                 var multiplied = d.MultiplyBy(t);
                 r = r.Subtract(multiplied);
-                r.RemoveZeros();
+                r.RemoveZeroCoefMonoms();
                 r.SortAndFillWithMissing();
             }
 
@@ -122,7 +132,7 @@ namespace MonomParse
             return q;
         }
 
-        private void RemoveZeros()
+        private void RemoveZeroCoefMonoms()
         {
             List<Monomial> temp = new List<Monomial>();
             foreach (var monom in Monomials)

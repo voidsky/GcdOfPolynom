@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -17,7 +18,7 @@ namespace MonomParse
                 Monomials.Add(new Monomial(monomialString, parser));
         }
 
-        public List<Monomial> Monomials { get; }
+        public List<Monomial> Monomials { get; set;  }
         private IExpressionParser Parser { get; }
 
         public int MonomialCount()
@@ -47,7 +48,7 @@ namespace MonomParse
             return str.ToString();
         }
 
-        public Polynomial SortedAndFilledWithMissing()
+        public void SortAndFillWithMissing()
         {
             int? lastExponent = null;
             var variableName = "";
@@ -68,7 +69,7 @@ namespace MonomParse
             }
 
             AddExponentRange(polyWithMissing, lastExponent - 1, 0, variableName);
-            return polyWithMissing;
+            this.Monomials = polyWithMissing.Monomials;
         }
 
         private void AddExponentRange(Polynomial toPolynomial, int? fromExponent, int? toExponent, string variableName)
@@ -97,35 +98,57 @@ namespace MonomParse
             return maxDegree;
         }
 
-        public void Divide(Polynomial divideWhat, Polynomial divideBy, Polynomial result, Polynomial reminder)
+        public Polynomial Divide(Polynomial n, Polynomial d, out Polynomial reminder)
         {
-            result = new Polynomial("", Parser);
-            divideWhat = divideWhat.SortedAndFilledWithMissing();
-            divideBy = divideBy.SortedAndFilledWithMissing();
+            n.SortAndFillWithMissing();
+            d.SortAndFillWithMissing();
 
-            Monomial highestMonomial = divideWhat.GetWithHighestDegree();
-            Monomial byHighest = divideBy?.GetWithHighestDegree();
-            Monomial divideResult = highestMonomial.DivideMonomialWithSameVariable(byHighest);
-            Polynomial multiplicationResult = divideBy.MultiplyBy(divideResult);
-            Polynomial subtractResult = divideWhat.Subtract(multiplicationResult);
-            result.AddMonomial(divideResult);
+            Polynomial q = new Polynomial("", Parser);
+            Polynomial r = n;
 
-            while (subtractResult.Degree() > divideBy.Degree())
+            while (!r.IsZero() && r.Degree() >= d.Degree())
             {
-                divideResult = subtractResult.GetWithHighestDegree()?.
-                    DivideMonomialWithSameVariable(divideBy?.GetWithHighestDegree());
-                multiplicationResult = divideBy.MultiplyBy(divideResult);
-                subtractResult = subtractResult.Subtract(multiplicationResult);
-                result.AddMonomial(divideResult);
+                Monomial lead_r = r.GetWithHighestDegree();
+                Monomial lead_d = d.GetWithHighestDegree();
+                Monomial t = lead_r.DivideMonomialWithSameVariable(lead_d);
+                q.AddMonomial(t);
+                var multiplied = d.MultiplyBy(t);
+                r = r.Subtract(multiplied);
+                r.RemoveZeros();
+                r.SortAndFillWithMissing();
             }
 
+            reminder = r;
+            return q;
+        }
+
+        private void RemoveZeros()
+        {
+            List<Monomial> temp = new List<Monomial>();
+            foreach (var monom in Monomials)
+            {
+                if (monom.Coefficient != 0)
+                {
+                    temp.Add(monom);
+                }
+            }
+            this.Monomials = temp;
+        }
+
+        private bool IsZero()
+        {
+            decimal coefficientSum = 0;
+            foreach (var mon in Monomials)
+            {
+                coefficientSum += mon.Coefficient;
+            }
+
+            return coefficientSum == 0;
         }
 
         public Polynomial Subtract(Polynomial substractBy)
         {
             if (this.Degree() != substractBy.Degree())
-                throw new InvalidMonomialOperationException();
-            if (this.MonomialCount() != substractBy.MonomialCount())
                 throw new InvalidMonomialOperationException();
 
             Polynomial result = new Polynomial("", Parser);
@@ -134,18 +157,29 @@ namespace MonomParse
 
             for (int x = 0; x < this.MonomialCount(); x++)
             {
-                Monomial subtractResult = fromMonoms[x].SubtractMonomialWithSameVariable(subtractMonoms[x]);
+                Monomial subtractResult;
+                if (x < substractBy.MonomialCount())
+                {
+                    subtractResult = fromMonoms[x].SubtractMonomialWithSameVariable(subtractMonoms[x]);
+                }
+                else
+                {
+                    subtractResult = fromMonoms[x];
+                }
+
                 result.AddMonomial(subtractResult);
             }
+
             return result;
         }
 
-        public Polynomial MultiplyBy(Monomial divideResult)
+        public Polynomial MultiplyBy(Monomial mult)
         {
+            if (mult == null) throw new ArgumentNullException(nameof(mult));
             Polynomial newPoly = new Polynomial("",Parser);
             foreach (Monomial monomial in Monomials)
             {
-                newPoly.AddMonomial(monomial.MultiplyBy(divideResult));
+                newPoly.AddMonomial(monomial.MultiplyBy(mult));
             }
             return newPoly;
         }

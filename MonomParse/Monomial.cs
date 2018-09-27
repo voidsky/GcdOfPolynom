@@ -23,7 +23,7 @@ namespace MonomialParse
             this.parser = parser;
             this.coefficient = coefficient??1;
             this.variable = variable?.Trim();
-            this.exponent = exponent??1;
+            this.exponent = exponent;
             this.expression = parser.CombineStringExpression(this.coefficient, this.variable, this.exponent);
         }
 
@@ -51,7 +51,6 @@ namespace MonomialParse
 
         public Monomial SubtractMonomialWithSameVariable(Monomial monomialToSubtract)
         {
-            if (!IsVariableAndExponentSame(monomialToSubtract)) throw new InvalidMonomialOperationException();
             var newCoefficient = this.coefficient - monomialToSubtract.coefficient;
             return new Monomial(newCoefficient, this.variable, this.exponent, parser);
         }
@@ -62,7 +61,7 @@ namespace MonomialParse
             if (divisorMonomial.coefficient == 0) throw new DivideByZeroException();
 
             var newCoefficient = this.coefficient / divisorMonomial.coefficient;
-            int? newExponent = 1;
+            int? newExponent = null;
             string newVariable;
 
             if (AreExponentsDifferent(divisorMonomial))
@@ -101,7 +100,7 @@ namespace MonomialParse
         }
 
         public string Variable => this.variable;
-        public decimal? Coefficient => this.coefficient;
+        public decimal Coefficient => this.coefficient;
         public int? Exponent => this.exponent;
 
         public string Expression
@@ -124,12 +123,15 @@ namespace MonomialParse
             return 1;
         }
 
-        public Monomial MultiplyBy(Monomial multiplicator)
+        public Monomial MultiplyBy(Monomial mult)
         {
-            if (!IsVariableSame(multiplicator)) throw new InvalidMonomialOperationException();
-            var newCoefficient = this.coefficient * multiplicator.coefficient;
-            int? newExponent = this.exponent + multiplicator.exponent;
-            string newVariable = this.variable;
+            var newCoefficient = this.coefficient * mult.coefficient;
+            int? newExponent = (this.exponent ?? 0) + (mult.exponent ?? 0);
+
+            string newVariable = "";
+            if (this.variable == mult.variable) newVariable = this.variable;
+            if (this.variable.Length>0 && mult.variable.Length ==0) newVariable = this.variable;
+            if (this.variable.Length == 0 && mult.variable.Length > 0) newVariable = mult.variable;
 
             return new Monomial(newCoefficient, newVariable, newExponent, parser);
         }

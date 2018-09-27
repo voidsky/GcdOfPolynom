@@ -72,8 +72,8 @@ namespace MonomParse
         {
             ExpressionParser parser = new ExpressionParser();
             Polynomial poly = new Polynomial(polyExpression, parser);
-            Polynomial polyWithMissing = poly.SortedAndFilledWithMissing();
-            Assert.AreEqual(expectedResult, polyWithMissing.PolynomialString());
+            poly.SortAndFillWithMissing();
+            Assert.AreEqual(expectedResult, poly.PolynomialString());
         }
 
         [TestCase(null, null)]
@@ -111,8 +111,8 @@ namespace MonomParse
             ExpressionParser parser = new ExpressionParser();
             Polynomial first = new Polynomial(firstPoly, parser);
             Polynomial second = new Polynomial(secondPoly, parser);
-
-            Assert.AreEqual(expectedResult, first.Subtract(second).PolynomialString());
+            first = first.Subtract(second);
+            Assert.AreEqual(expectedResult, first.PolynomialString());
         }
 
         [TestCase("-10x^8", "5")]
@@ -123,22 +123,45 @@ namespace MonomParse
             Polynomial first = new Polynomial(firstPoly, parser);
             Polynomial second = new Polynomial(secondPoly, parser);
             Assert.Throws<InvalidMonomialOperationException>(() =>
-                first.Subtract(second).PolynomialString());
+                first.Subtract(second));
 
         }
 
-        [TestCase("5-2x^2+3x^3","x^2-1","3x-2")]
-        public void TestPolyLongDivision(string whatExpr, string byExptr, string resultExpr)
+        [TestCase("x^2+0x-1", "1", "x^2+0x-1")]
+        [TestCase("x^2+0x-1", "0", "0x^2+0x+0")]
+        [TestCase("x^2+0x-1", "-2", "-2x^2+0x+2")]
+        public void TestPolyMultiply(string whatExpr, string byExptr, string resultExpr)
+        {
+            ExpressionParser parser = new ExpressionParser();
+            Polynomial first = new Polynomial(whatExpr, parser);
+            Monomial second = new Monomial(byExptr, parser);
+            Polynomial result = first.MultiplyBy(second);
+            Assert.AreEqual(resultExpr, result.PolynomialString());
+
+        }
+
+
+        [TestCase("6-2x^2+3x^3","x^2-1","3x-2", "3x+4")]
+        [TestCase("2x+x^3-4x^2-3", "x+2", "x^2-6x+14", "-31")]
+        [TestCase("4x^3-13x^2+2x-7", "x^2+3x-2", "4x-25", "85x-57")]
+        [TestCase("2x^3+2x+7x^2+9", "2x+3", "x^2+2x-2", "15")]
+        [TestCase("x^3+3x^2-4x-12", "x^2+x-6", "x+2", "")]
+        [TestCase("x^3-4x^2+2x+5", "x-2", "x^2-2x-2", "1")]
+        [TestCase("2x^3+4x^2-5", "x+3", "2x^2-2x+6", "-23")]
+        [TestCase("2x^3-4x+7x^2+7", "x^2+2x-1", "2x+3", "-8x+10")]
+        [TestCase("4x^3-2x^2-3", "2x^2-1", "2x-1", "2x-4")]
+        [TestCase("x^2", "x", "x", "")]
+        [TestCase("x^2+1", "x", "x", "1")]
+        [TestCase("3x^3+4x+11", "x^2-3x+2", "3x+9", "25x-7")]
+        public void TestPolyLongDivision(string whatExpr, string byExptr, string resultExpr, string reminderExpr)
         {
             ExpressionParser parser = new ExpressionParser();
             Polynomial first = new Polynomial(whatExpr, parser);
             Polynomial second = new Polynomial(byExptr, parser);
-            Polynomial result = new Polynomial("", parser);
-            Polynomial reminder = new Polynomial("", parser);
-
-            second.Divide(first, second, result, reminder);
+            Polynomial reminder;
+            Polynomial result = second.Divide(first, second, out reminder);
             Assert.AreEqual(resultExpr, result.PolynomialString());
-
+            Assert.AreEqual(reminderExpr, reminder.PolynomialString());
         }
 
 

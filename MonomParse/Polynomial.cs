@@ -135,9 +135,8 @@ namespace MonomParse
             decimal coefficientSum = 0;
             foreach (var mon in Monomials)
             {
-                coefficientSum += mon.Coefficient;
+                if (mon.Coefficient!=0) coefficientSum =mon.Coefficient;
             }
-
             return coefficientSum == 0;
         }
 
@@ -188,9 +187,9 @@ namespace MonomParse
                   return (q, r)*/
             Polynomial n = (Polynomial)this.Clone();
             n.SortDescending();
-            n.FillWithMissing((int)n.Degree(),n.FirstVariableName());
+            n.FillWithMissing(n.Degree()??0,n.FirstVariableName());
             d.SortDescending();
-            d.FillWithMissing((int)d.Degree(), d.FirstVariableName());
+            d.FillWithMissing(d.Degree()??0, d.FirstVariableName());
 
             Polynomial q = new Polynomial("", Parser);
             Polynomial r = n;

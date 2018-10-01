@@ -117,7 +117,7 @@ namespace MonomParse
         [TestCase(5, "x", 1, 2, "x", 2, "2.5x^-1")]
         [TestCase(5, "x", 2, 2, "x", 2, "2.5")]
         [TestCase(-5, "x", -2, 2, "x", 2, "-2.5x^-4")]
-        public void MonomialsDivisionTest1(decimal? coefficient, string variable, int? exponent,
+        public void MonomialsDivisionTest1(int? coefficient, string variable, int? exponent,
             int? coefficient2, string variable2, int? exponent2,
             string expressionResult)
         {

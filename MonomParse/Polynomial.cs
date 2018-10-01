@@ -187,9 +187,9 @@ namespace MonomParse
                   return (q, r)*/
             Polynomial n = (Polynomial)this.Clone();
             n.SortDescending();
-            n.FillWithMissing(n.Degree()??0,n.FirstVariableName());
+            n = n.FillWithMissing(n.Degree()??0,n.FirstVariableName());
             d.SortDescending();
-            d.FillWithMissing(d.Degree()??0, d.FirstVariableName());
+            d = d.FillWithMissing(d.Degree()??0, d.FirstVariableName());
 
             Polynomial q = new Polynomial("", Parser);
             Polynomial r = n;
@@ -247,17 +247,15 @@ namespace MonomParse
 
         public Polynomial Gcd(Polynomial other)
         {
-            Polynomial r;
-            Polynomial q = this.Divide(other, out r);
-            if (r.IsZero())
+            if (other.IsZero())
             {
-                return q;
+                return this;
             }
             else
             {
+                Polynomial q = this.Divide(other, out Polynomial r);
                 return other.Gcd(r);
             }
-
         }
 
         public object Clone()

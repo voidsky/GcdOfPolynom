@@ -159,16 +159,16 @@ namespace MonomParse
             Assert.AreEqual(reminderExpr, reminder.Expression());
         }
 
-        [TestCase("x^4","x^2","x^2")]
-        [TestCase("x^4+1", "x^2", "1")]
+        [TestCase("x^4", "x^2", "x^2")]
+        [TestCase("x^4+1", "x^2", "x^2")]
         [TestCase("x^2+7x+6", "x^2-5x-6", "x+1")]
         public void TestPolyGcd(string whatExpr, string withExpr, string resultExpr)
         {
             ExpressionParser parser = new ExpressionParser();
             Polynomial first = new Polynomial(whatExpr, parser);
             Polynomial second = new Polynomial(withExpr, parser);
-            //Polynomial reminder = first.Gcd(second);
-            //Assert.AreEqual(resultExpr, reminder.Expression());
+            Polynomial reminder = first.Gcd(second);
+            Assert.AreEqual(resultExpr, reminder.Expression());
         }
 
         [TestCase("x^2+7x+6", "x^2+7x+6")]

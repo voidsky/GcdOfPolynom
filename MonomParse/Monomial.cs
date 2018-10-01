@@ -70,7 +70,7 @@ namespace MonomialParse
             if (!IsVariableSame(divisorMonomial)) throw new InvalidMonomialOperationException();
             if (divisorMonomial.coefficient == 0) throw new DivideByZeroException();
 
-            var newCoefficient = this.coefficient / divisorMonomial.coefficient;
+            var newCoefficient = decimal.Round(this.coefficient / divisorMonomial.coefficient,3);
             int? newExponent = null;
             string newVariable;
 
@@ -136,13 +136,24 @@ namespace MonomialParse
 
         public Monomial MultiplyBy(Monomial mult)
         {
-            var newCoefficient = this.coefficient * mult.coefficient;
+            var newCoefficient = Decimal.Round(this.coefficient * mult.coefficient);
             int? newExponent = (this.exponent ?? 0) + (mult.exponent ?? 0);
 
             string newVariable = "";
-            if (this.variable == mult.variable) newVariable = this.variable;
-            if (this.variable.Length>0 && mult.variable.Length ==0) newVariable = this.variable;
-            if (this.variable.Length == 0 && mult.variable.Length > 0) newVariable = mult.variable;
+            if (this.variable == mult.variable)
+            {
+                newVariable = this.variable;
+            }
+            else if (!this.HasVariable() && mult.HasVariable())
+            {
+                newVariable = mult.variable;
+
+            }
+            else
+            {
+                newVariable = this.variable;
+
+            }
 
             return new Monomial(newCoefficient, newVariable, newExponent, parser);
         }

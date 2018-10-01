@@ -58,7 +58,7 @@ namespace MonomialParse
         [TestCase(-5, "", null, "-5")]
         [TestCase(null, "", -5, "1")]
         [TestCase(null, "x", null, "x")]
-        public void CreateMonomialResultsIn(decimal? coefficient, string variable, int? exponent, string expression)
+        public void CreateMonomialResultsIn(int? coefficient, string variable, int? exponent, string expression)
         {
             IExpressionParser parser = new ExpressionParser();
             Monomial monomial = new Monomial(coefficient, variable, exponent, parser);

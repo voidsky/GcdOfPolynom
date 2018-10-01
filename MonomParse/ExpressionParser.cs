@@ -22,7 +22,7 @@ namespace MonomialParse
             return 1;
         }
 
-        public decimal ExtractCoefficient(string expression)
+        public int ExtractCoefficient(string expression)
         {
             var stringCoefficient = ExtractExpressionPart(expression, "coeficient");
             if (stringCoefficient == "-") stringCoefficient = "-1";

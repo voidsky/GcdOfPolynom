@@ -50,7 +50,6 @@ namespace MonomialParse
                 stringCoefficient = (coefficient ?? 1).ToString();
             }
 
-
             string expression = $"{stringCoefficient}{stringVariable}{stringExponent}";
             return expression;
         }
@@ -63,5 +62,7 @@ namespace MonomialParse
                 result = exponentMatch.Groups[regexGroup].Value.Trim();
             return result;
         }
+
+
     }
 }

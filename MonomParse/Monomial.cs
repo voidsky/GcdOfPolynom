@@ -67,7 +67,8 @@ namespace MonomialParse
 
         public Monomial DivideMonomialWithSameVariable(Monomial divisorMonomial)
         {
-            if (!IsVariableSame(divisorMonomial)) throw new InvalidMonomialOperationException();
+            if (!divisorMonomial.HasVariable() && divisorMonomial.coefficient == 1) return this;
+            //if (!IsVariableSame(divisorMonomial)) throw new InvalidMonomialOperationException();
             if (divisorMonomial.coefficient == 0) throw new DivideByZeroException();
 
             var newCoefficient = decimal.Round(this.coefficient / divisorMonomial.coefficient,3);
@@ -112,6 +113,20 @@ namespace MonomialParse
         public string Variable => this.variable;
         public decimal Coefficient => this.coefficient;
         public int? Exponent => this.exponent;
+
+        public int Degree()
+        {
+            if (this.HasVariable() && Exponent != null)
+            {
+                return (int)exponent;
+            } 
+            else if (this.coefficient > 0)
+            {
+                return 0;
+            }
+
+            return 0;
+        }
 
         public string Expression
         {

@@ -101,8 +101,16 @@ namespace MonomParse
             int? maxDegree = null;
             foreach (var monomial in Monomials)
                 if (monomial.HasVariable())
+                {
                     if (monomial.Exponent > maxDegree || maxDegree == null)
                         maxDegree = monomial.Exponent;
+                }
+                else
+                {
+                    if (1 > maxDegree || maxDegree == null)
+                        maxDegree = 0;
+
+                }
 
             return maxDegree;
         }
@@ -171,7 +179,9 @@ namespace MonomParse
                      q ← q + t
                      r ← r − t * d
                   return (q, r)*/
-        var n = (Polynomial) Clone();
+            
+            var n = (Polynomial) Clone();
+
             n.SortDescending();
             n = n.FillWithMissing(n.Degree() ?? 0, n.FirstVariableName());
             d.SortDescending();
@@ -217,7 +227,7 @@ namespace MonomParse
         {
             var degree = Degree();
             foreach (var monomial in Monomials)
-                if (monomial.Exponent == degree)
+                if (monomial.Degree() == degree)
                     return monomial;
             return null;
         }
@@ -225,10 +235,19 @@ namespace MonomParse
         /* Exercise 1 */
         public Polynomial Gcd(Polynomial other)
         {
-            if (other.IsZero()) return this;
+            var a = (Polynomial)this.Clone();
+            var b = (Polynomial)other.Clone();
 
-            var q = Divide(other, out var r);
-            return other.Gcd(r);
+            if (b.IsZero())
+            {
+                return a;
+            }
+            else
+            {
+                var x = a.Divide(b, out var r);
+                var c = b.Gcd(r);
+                return c;
+            }
         }
 
         public override bool Equals(object obj)

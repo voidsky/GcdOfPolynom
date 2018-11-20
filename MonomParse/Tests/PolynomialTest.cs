@@ -131,7 +131,11 @@ namespace MonomParse
 
         }
 
+        [TestCase("4x^3-7x^2-11x+5", "4x+5", "x^2-3x+1", "0")]
+        [TestCase("x^4+6x^2+2", "x^2+5", "x^2+1", "-3")]
+        [TestCase("x^2+7x+6", "x^2-5x-6", "1", "12x+12")]
         [TestCase("x^2", "x", "x", "0")]
+        [TestCase("x^2", "1", "x^2", "0")]
         [TestCase("6-2x^2+3x^3","x^2-1","3x-2", "3x+4")]
         [TestCase("2x+x^3-4x^2-3", "x+2", "x^2-6x+14", "-31")]
         [TestCase("4x^3-13x^2+2x-7", "x^2+3x-2", "4x-25", "85x-57")]
@@ -147,6 +151,7 @@ namespace MonomParse
         [TestCase("x^2-3x-10", "x+2", "x-5", "0")]
         [TestCase("2x^2-5x-1", "x-3", "2x+1", "2")]
         [TestCase("x^6+2x^4+6x-9", "x^3+3", "x^3+2x-3", "0")]
+        [TestCase("x^4-9x^2-4x-12", "x^3+5x^2+2x-8", "x-5", "14x^2+14x-52")]
         public void TestPolyLongDivision(string whatExpr, string byExptr, string resultExpr, string reminderExpr)
         {
             ExpressionParser parser = new ExpressionParser();
@@ -160,15 +165,20 @@ namespace MonomParse
         }
 
         [TestCase("x^4", "x^2", "x^2")]
-        [TestCase("x^4+1", "x^2", "x^2")]
-        [TestCase("x^2+7x+6", "x^2-5x-6", "x+1")]
+        [TestCase("x^4+1", "x^2", "1")]
+        [TestCase("x^2+7x+6", "x^2-5x-6", "12x+12")]
+        [TestCase("x^4-9x^2-4x+12","x^3+5x^2+2x-8", "14x^2+14x-28")]
+        [TestCase("x^4-x^2", "x^2", "x^2")]
+        [TestCase("x^5+1", "x^3+1", "x+1")]
+        [TestCase("2x^2+6x+3", "2x+1", "1")]
+        [TestCase("x^9+x^3", "x^3", "x^3")]
         public void TestPolyGcd(string whatExpr, string withExpr, string resultExpr)
         {
             ExpressionParser parser = new ExpressionParser();
             Polynomial first = new Polynomial(whatExpr, parser);
             Polynomial second = new Polynomial(withExpr, parser);
-           // Polynomial reminder = first.Gcd(second);
-           // Assert.AreEqual(resultExpr, reminder.Expression());
+            Polynomial reminder = first.Gcd(second);
+            Assert.AreEqual(resultExpr, reminder.Expression());
         }
 
         [TestCase("x^2+7x+6", "x^2+7x+6")]

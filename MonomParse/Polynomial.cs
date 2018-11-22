@@ -235,17 +235,14 @@ namespace MonomParse
         /* Exercise 1 */
         public Polynomial Gcd(Polynomial other)
         {
-            var a = (Polynomial)this.Clone();
-            var b = (Polynomial)other.Clone();
-
-            if (b.IsZero())
+            if (other.IsZero())
             {
-                return a;
+                return this;
             }
             else
             {
-                var x = a.Divide(b, out var r);
-                var c = b.Gcd(r);
+                var x = this.Divide(other, out var remainder);
+                var c = other.Gcd(remainder);
                 return c;
             }
         }

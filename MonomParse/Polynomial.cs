@@ -241,9 +241,8 @@ namespace MonomParse
             }
             else
             {
-                var x = this.Divide(other, out var remainder);
-                var c = other.Gcd(remainder);
-                return c;
+                var x = this.Divide(other, out var remainder); 
+                return other.Gcd(remainder);
             }
         }
 
